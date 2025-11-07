@@ -1,5 +1,71 @@
 {
   "baseUrl": "https://your-org.okta.com",
+  "apiVersion": "v1",
   "apiToken": "REPLACE_ME_WITH_SECURE_SECRET_REFERENCE",
-  "rateLimitPerMinute": 60
+  "rateLimitPerMinute": 60,
+
+  "auth": {
+    "tokenHeader": "Authorization",
+    "tokenPrefix": "SSWS",
+    "secureStorage": "AzureKeyVault",
+    "retryOn401": true,
+    "maxRetries": 3
+  },
+
+  "endpoints": {
+    "users": "/api/v1/users",
+    "groups": "/api/v1/groups",
+    "apps": "/api/v1/apps",
+    "sessions": "/api/v1/sessions",
+    "events": "/api/v1/logs",
+    "factors": "/api/v1/users/{userId}/factors",
+    "activateUser": "/api/v1/users/{userId}/lifecycle/activate",
+    "deactivateUser": "/api/v1/users/{userId}/lifecycle/deactivate"
+  },
+
+  "timeouts": {
+    "connectionTimeoutSeconds": 10,
+    "readTimeoutSeconds": 30
+  },
+
+  "pagination": {
+    "enabled": true,
+    "pageSize": 200,
+    "maxPages": 50
+  },
+
+  "logging": {
+    "enabled": true,
+    "logLevel": "Info",
+    "logFile": "./logs/okta_api.log",
+    "includeRequestId": true
+  },
+
+  "webhooks": {
+    "enabled": true,
+    "events": [
+      "user.lifecycle.create",
+      "user.lifecycle.activate",
+      "user.lifecycle.deactivate",
+      "group.user_membership.add",
+      "group.user_membership.remove"
+    ],
+    "callbackUrl": "https://automation.yourdomain.com/api/okta/webhook",
+    "secret": "REPLACE_ME_WITH_WEBHOOK_SECRET"
+  },
+
+  "integration": {
+    "enabled": true,
+    "useProxy": false,
+    "proxyUrl": "",
+    "maxParallelRequests": 4,
+    "failOnError": false
+  },
+
+  "metadata": {
+    "maintainer": "Claney",
+    "lastModified": "2024-10-07T00:00:00Z",
+    "version": "2.2",
+    "environment": "Production"
+  }
 }
