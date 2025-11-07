@@ -1,0 +1,36 @@
+# PowerShell & IT Automation Toolkit .gitignore
+
+# Ignore temporary files and logs
+*.log
+*.tmp
+*.bak
+*.old
+
+# Ignore PowerShell data files
+*.psd1
+*.psm1
+*.pdb
+
+# Ignore compiled scripts or packaged modules
+*.exe
+*.dll
+
+# Ignore IDE/Editor files
+.vscode/
+.idea/
+*.code-workspace
+
+# Ignore system files
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Ignore environment-specific or credentials files
+*.env
+*.json.secret
+*.config.local
+
+# Ignore backup or exported reports
+/reports/
+/logs/
+/output/
