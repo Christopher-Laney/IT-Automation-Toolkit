@@ -85,8 +85,8 @@ The project emphasizes **automation, security, and scalability**, showing how a 
 
 **Claney**  
 IT Manager & Consultant | Cloud, Automation, and Infrastructure Design  
-🔗 LinkedIn: https://linkedin.com/in/yourprofile  
-🔗 Linktree: https://linktr.ee/yourlink
+🔗 LinkedIn: https://www.linkedin.com/in/christopher-laney-b085a068 
+🔗 Linktree: https://linktr.ee/gatica.unlimited
 
 ---
 
