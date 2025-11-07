@@ -1,5 +1,12 @@
 # 🧰 IT Automation Toolkit
-![IT Automation Toolkit Banner](docs/banner.png)
+<p align="center">
+  <img src="docs/banner.png" alt="IT Automation Toolkit Banner" width="800">
+</p>
+
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![Platform: PowerShell](https://img.shields.io/badge/Platform-PowerShell-blue)
+![Status: Active](https://img.shields.io/badge/Status-Active-success)
+
 A collection of real-world PowerShell scripts, templates, and configurations designed to streamline IT operations and demonstrate practical automation in enterprise environments.
 
 ---
