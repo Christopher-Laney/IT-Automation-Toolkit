@@ -6,7 +6,7 @@ A collection of real-world PowerShell scripts, templates, and configurations des
 
 ## 🚀 Overview
 
-This toolkit highlights how IT managers can automate common administrative workflows — including user onboarding, offboarding, compliance reporting, and scheduled backups — while maintaining visibility through dashboards and audit logs.
+This toolkit highlights how IT managers can automate common administrative workflows, including user onboarding, offboarding, compliance reporting, and scheduled backups, while maintaining visibility through dashboards and audit logs.
 
 The project emphasizes **automation, security, and scalability**, showing how a modern IT department can reduce manual effort and improve consistency.
 
