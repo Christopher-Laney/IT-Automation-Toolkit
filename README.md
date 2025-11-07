@@ -1,5 +1,5 @@
 # 🧰 IT Automation Toolkit
-
+![IT Automation Toolkit Banner](docs/banner.png)
 A collection of real-world PowerShell scripts, templates, and configurations designed to streamline IT operations and demonstrate practical automation in enterprise environments.
 
 ---
