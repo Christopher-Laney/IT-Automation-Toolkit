@@ -1,13 +1,94 @@
 {
   "policy": "Baseline Conditional Access",
+  "description": "Default enterprise-level conditional access policy requiring MFA for all users and blocking legacy authentication.",
+  "state": "enabled",
   "requireMfa": true,
-  "locations": [
-    "All"
-  ],
-  "grantControls": [
-    "MFA"
-  ],
-  "includeApps": [
-    "Office365"
-  ]
+
+  "conditions": {
+    "users": {
+      "includeGroups": [
+        "AllUsers"
+      ],
+      "excludeGroups": [
+        "BreakGlassAdmins",
+        "ServiceAccounts"
+      ]
+    },
+    "applications": {
+      "includeApps": [
+        "Office365",
+        "MicrosoftGraph",
+        "ExchangeOnline",
+        "SharePointOnline"
+      ],
+      "excludeApps": [
+        "MicrosoftIntune",
+        "AzurePortal"
+      ]
+    },
+    "locations": {
+      "includeLocations": [
+        "All"
+      ],
+      "excludeLocations": [
+        "TrustedLocations"
+      ]
+    },
+    "devicePlatforms": {
+      "includePlatforms": [
+        "Windows",
+        "macOS",
+        "iOS",
+        "Android"
+      ]
+    },
+    "clientAppTypes": [
+      "Browser",
+      "ModernApps"
+    ],
+    "signInRiskLevels": [
+      "medium",
+      "high"
+    ],
+    "deviceStates": {
+      "includeStates": [
+        "Compliant"
+      ],
+      "excludeStates": [
+        "Unknown"
+      ]
+    }
+  },
+
+  "grantControls": {
+    "operator": "OR",
+    "builtInControls": [
+      "MFA",
+      "CompliantDevice"
+    ],
+    "customControls": []
+  },
+
+  "sessionControls": {
+    "signInFrequency": {
+      "isEnabled": true,
+      "value": 12,
+      "unit": "hours"
+    },
+    "persistentBrowser": {
+      "mode": "never"
+    },
+    "appEnforcedRestrictions": {
+      "isEnabled": true
+    },
+    "cloudAppSecurity": {
+      "isEnabled": true,
+      "mode": "monitorOnly"
+    }
+  },
+
+  "reportOnlyMode": false,
+  "createdBy": "Claney",
+  "lastModified": "2024-10-07T00:00:00Z",
+  "version": "2.1"
 }
