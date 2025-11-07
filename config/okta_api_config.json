@@ -1,0 +1,5 @@
+{
+  "baseUrl": "https://your-org.okta.com",
+  "apiToken": "REPLACE_ME_WITH_SECURE_SECRET_REFERENCE",
+  "rateLimitPerMinute": 60
+}

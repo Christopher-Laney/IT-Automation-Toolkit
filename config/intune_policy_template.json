@@ -1,0 +1,7 @@
+{
+  "policyName": "Baseline Compliance Policy",
+  "requireBitLocker": true,
+  "passwordRequired": true,
+  "osMinimumVersion": "10.0.19045",
+  "firewallEnabled": true
+}

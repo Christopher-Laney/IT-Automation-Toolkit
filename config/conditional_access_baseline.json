@@ -1,0 +1,13 @@
+{
+  "policy": "Baseline Conditional Access",
+  "requireMfa": true,
+  "locations": [
+    "All"
+  ],
+  "grantControls": [
+    "MFA"
+  ],
+  "includeApps": [
+    "Office365"
+  ]
+}
