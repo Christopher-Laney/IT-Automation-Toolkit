@@ -1,0 +1,89 @@
+{
+  "policyName": "Baseline: Require MFA for Admins and Cloud Apps",
+  "description": "Template baseline Conditional Access policy to require MFA for privileged roles and key cloud apps.",
+  "version": 1,
+  "state": "reportOnly", 
+  "conditions": {
+    "users": {
+      "includeRoles": [
+        "Global Administrator",
+        "Privileged Role Administrator",
+        "Security Administrator",
+        "Exchange Administrator",
+        "SharePoint Administrator"
+      ],
+      "includeUsers": [
+        "All"
+      ],
+      "excludeUsers": [
+        "BreakGlass-Account-1",
+        "BreakGlass-Account-2"
+      ]
+    },
+    "applications": {
+      "includeApps": [
+        "Office365",
+        "AzurePortal",
+        "ExchangeOnline",
+        "SharePointOnline",
+        "Teams"
+      ],
+      "excludeApps": []
+    },
+    "locations": {
+      "includeLocations": [
+        "All"
+      ],
+      "excludeLocations": [
+        "Trusted-HeadOffice",
+        "Trusted-DataCenter"
+      ]
+    },
+    "devicePlatforms": {
+      "includePlatforms": [
+        "Android",
+        "iOS",
+        "Windows",
+        "macOS"
+      ],
+      "excludePlatforms": []
+    },
+    "clientAppTypes": [
+      "browser",
+      "mobileAppsAndDesktopClients"
+    ],
+    "signInRiskLevels": [
+      "high",
+      "medium"
+    ],
+    "userRiskLevels": [
+      "high"
+    ]
+  },
+  "grantControls": {
+    "operator": "AND",
+    "builtInControls": [
+      "mfa"
+    ],
+    "customAuthenticationFactors": [],
+    "termsOfUse": []
+  },
+  "sessionControls": {
+    "signInFrequency": {
+      "isEnabled": true,
+      "frequencyInHours": 12
+    },
+    "persistentBrowser": {
+      "mode": "never"
+    },
+    "appEnforcedRestrictions": {
+      "isEnabled": false
+    }
+  },
+  "metadata": {
+    "owner": "IT-Security",
+    "createdBy": "Template",
+    "lastUpdatedBy": "Template",
+    "notes": "Use this JSON as an input template for automation scripts that create or update Conditional Access policies via Microsoft Graph."
+  }
+}
