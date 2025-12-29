@@ -1,0 +1,69 @@
+{
+  "policyName": "Baseline Compliance Policy: Windows 10/11",
+  "description": "Baseline compliance policy template for corporate Windows 10/11 devices.",
+  "platform": "Windows10AndLater",
+  "version": 1,
+  "scopeTags": [
+    "Default",
+    "Corp"
+  ],
+  "osMinimumVersion": "10.0.19045",
+  "osMaximumVersion": null,
+  "requireBitLocker": true,
+  "passwordRequired": true,
+  "passwordMinimumLength": 8,
+  "passwordRequiredType": "alphanumeric",
+  "firewallEnabled": true,
+  "deviceThreatProtectionRequired": false,
+  "jailBrokenBlocked": true,
+  "secureBootRequired": true,
+  "codeIntegrityRequired": true,
+  "defenderEnabled": true,
+  "settings": {
+    "systemSecurity": {
+      "requireSecureBoot": true,
+      "requireTPM": true,
+      "blockSimplePasswords": true,
+      "passwordExpirationDays": 365,
+      "passwordHistoryCount": 5
+    },
+    "encryption": {
+      "requireDeviceEncryption": true,
+      "bitLockerRecoveryKeyEscrow": "AzureAD"
+    },
+    "defender": {
+      "realTimeProtectionRequired": true,
+      "cloudProtectionEnabled": true,
+      "automaticSampleSubmission": true
+    },
+    "deviceHealth": {
+      "osMinimumVersion": "10.0.19045",
+      "requireUpToDateOS": true,
+      "maxDaysSinceLastUpdate": 30
+    }
+  },
+  "nonComplianceActions": [
+    {
+      "action": "sendEmailToUser",
+      "gracePeriodDays": 0,
+      "templateName": "Non-compliance notification"
+    },
+    {
+      "action": "markDeviceNonCompliant",
+      "gracePeriodDays": 0
+    },
+    {
+      "action": "sendEmailToAdmin",
+      "gracePeriodDays": 1,
+      "recipients": [
+        "it-ops@contoso.com"
+      ]
+    }
+  ],
+  "metadata": {
+    "owner": "Endpoint-Management",
+    "createdBy": "Template",
+    "lastUpdatedBy": "Template",
+    "notes": "Used as a baseline for Intune compliance policy automation. Map these fields into Microsoft Graph deviceManagement compliancePolicy payloads."
+  }
+}
