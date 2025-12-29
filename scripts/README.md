@@ -1,30 +1,55 @@
 # 🧰 IT Automation Scripts
 
-This folder contains modular PowerShell scripts designed for IT operations, automation, reporting, and compliance enforcement across Azure AD / Entra ID, Microsoft 365, Intune, Okta, and Windows environments.
+This directory contains production-ready PowerShell scripts used for automation, auditing, reporting, compliance enforcement, backups, and IT operations management across **Azure AD / Entra ID**, **Microsoft 365**, **Intune**, **Okta**, and Windows environments.
+
+Scripts are grouped logically so the toolkit is easy to navigate and adopt into real IT workflows.
 
 Use these individually, or integrate them into scheduled tasks, pipelines, or automated workflows.
 
 
-## 📄 Script Index
+## 📄 Script Index and Suggested Run Cadence
 
-| Script Name | Purpose | Suggested Schedule |
-|------------|----------|-------------------|
-| **onboarding.ps1** | Creates new users from CSV, prepares Graph payloads for account provisioning. | On-demand / HR request |
-| **offboarding.ps1** | Disables account, revokes sessions, placeholder for mailbox/archive workflows. | On-demand / termination |
-| **backup_automation.ps1** | Compresses backup source, timestamps archive, generates SHA-256 hash for integrity. | Daily / nightly job |
-| **inventory_report.ps1** | Exports installed software inventory to CSV for asset tracking/security review. | Weekly or monthly |
-| **conditional_access_baseline.json** | Baseline policy config reference for MFA/CA automation. | Reference / reusable |
-| **intune_policy_template.json** | Example compliance policy definition for Intune enrollment baselines. | Reference / reusable |
-| **okta_api_config.json** | Central config for Okta API automation (tokens, rate limits, org URL). | Reference / reusable |
-| **okta_api_handler.ps1** | Generic Okta REST wrapper for user/group API automation. | On-demand / script dependency |
-| **inactive_user_report.ps1** | Detect users inactive for X days in Azure AD or On-Prem AD. | Weekly or monthly review |
-| **azure_resource_tagging.ps1** | Ensures required Azure tags exist, applies missing tags automatically. | Monthly or after resource creation |
-| **system_health_report.ps1** | CPU/MEM/disk snapshot across servers/workstations. Exports CSV + optional HTML. | Daily or weekly |
-| **restart_failed_services.ps1** | Detects and restarts failed automatic services with retry logic. | Daily or hourly for servers |
-| **group_membership_audit.ps1** | Exports group memberships for least privilege/access review. | Quarterly or security audits |
-| **m365_license_audit.ps1** | Lists license usage and missing assignments for required SKU baseline. | Weekly or monthly |
-| **intune_device_compliance_audit.ps1** | Reports compliance, OS versions, stale devices, last check-in. | Weekly or monthly |
-| **teams_webhook_alert.ps1** | Unified alert notifier for Teams, importable by other scripts. | Triggered by automation events |
+| Category | Script | Purpose | Schedule |
+|---|---|---|---|
+| **Identity** | onboarding.ps1 | Create new users from CSV. | On-demand |
+|  | offboarding.ps1 | Disable accounts & revoke sessions. | On-demand |
+|  | inactive_user_report.ps1 | Find inactive accounts. | Weekly / Monthly |
+|  | group_membership_audit.ps1 | Export group membership for audits. | Quarterly |
+|  | okta_api_handler.ps1 | Reusable Okta API wrapper. | Dependency / On-demand |
+|  | okta_api_config.json | API config template for Okta scripts. | Config template |
+| **Compliance** | intune_device_compliance_audit.ps1 | Compliance, OS, stale device reporting. | Weekly / Monthly |
+|  | intune_policy_template.json | Baseline compliance JSON. | Config template |
+|  | conditional_access_baseline.json | Baseline CA policy JSON. | Config template |
+|  | apply_intune_policy.ps1 | Apply Intune policy from template. | On-demand / Change mgmt |
+|  | set_conditional_access_policy.ps1 | Deploy Conditional Access rules. | On-demand / Security rollout |
+| **Reporting** | inventory_report.ps1 | Installed software export. | Monthly |
+|  | m365_license_audit.ps1 | License usage + missing allocation. | Weekly / Monthly |
+|  | ssl_certificate_expiry_report.ps1 | Cert age/status monitoring. | Weekly / Monthly |
+|  | generate_it_audit_dashboard.ps1 | Build HTML dashboard of reports. | Weekly / Monthly |
+|  | system_health_report.ps1 | CPU/RAM/Disk status snapshot. | Daily / Weekly |
+|  | local_admin_audit.ps1 | List local admins (security). | Monthly / Audits |
+| **Automation** | backup_automation.ps1 | Backup + hashing verification. | Daily |
+|  | restart_failed_services.ps1 | Auto fix failed services. | Daily / Hourly for servers |
+|  | azure_resource_tagging.ps1 | Enforce tag standards. | Monthly / On resource creation |
+|  | log_cleanup.ps1 | Safe cleanup of logs/temp files. | Monthly |
+|  | invoke_it_baseline_checks.ps1 | Master orchestration run. | Weekly / Daily |
+| **Notifications** | teams_webhook_alert.ps1 | Reusable Teams alert sender. | Called by other scripts |
+
+
+## 🔥 Usage Examples
+
+```powershell
+# Run a weekly security baseline
+.\automation\invoke_it_baseline_checks.ps1 -RunCompliance -RunOps
+
+# Generate dashboard after reports exist
+.\reporting\generate_it_audit_dashboard.ps1
+
+# Deploy baseline Conditional Access settings
+.\compliance\set_conditional_access_policy.ps1 -Config ".\config\conditional_access_baseline.json"
+
+# Audit Intune device compliance
+.\compliance\intune_device_compliance_audit.ps1 -ExportPath ".\reports\intune.csv"
 
 
 ## 🏗 Integration Ideas
