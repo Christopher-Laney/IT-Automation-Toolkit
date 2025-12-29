@@ -1,0 +1,44 @@
+{
+  "baseUrl": "https://your-org.okta.com",
+  "apiToken": "REPLACE_ME_WITH_SECURE_SECRET_REFERENCE",
+  "defaultTimeoutSeconds": 30,
+  "rateLimit": {
+    "requestsPerMinute": 60,
+    "burst": 20,
+    "cooldownSeconds": 60
+  },
+  "retries": {
+    "maxAttempts": 3,
+    "backoffSeconds": 2,
+    "retryOnStatusCodes": [
+      429,
+      500,
+      502,
+      503,
+      504
+    ]
+  },
+  "endpoints": {
+    "users": "/api/v1/users",
+    "groups": "/api/v1/groups",
+    "groupMemberships": "/api/v1/groups/{groupId}/users",
+    "apps": "/api/v1/apps",
+    "events": "/api/v1/logs"
+  },
+  "headers": {
+    "accept": "application/json",
+    "contentType": "application/json",
+    "userAgent": "IT-Automation-Toolkit/okta_api_handler"
+  },
+  "logging": {
+    "enabled": true,
+    "logPath": ".\\logs\\okta_api.log",
+    "logLevel": "Info"
+  },
+  "metadata": {
+    "owner": "Identity-Management",
+    "createdBy": "Template",
+    "lastUpdatedBy": "Template",
+    "notes": "Use this config with okta_api_handler.ps1. Do NOT commit real API tokens to source control."
+  }
+}
