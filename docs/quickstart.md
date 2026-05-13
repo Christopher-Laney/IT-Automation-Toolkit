@@ -28,6 +28,7 @@ No output means no parser errors were found.
 ```
 
 Review the proposed changes before running without `-WhatIf`.
+Generated temporary passwords are omitted from the normal report output by default. Use `-IncludeTemporaryPasswordInReport` only for controlled demos or a secure handoff process.
 
 ## 4. Prepare Optional Server Checks
 
