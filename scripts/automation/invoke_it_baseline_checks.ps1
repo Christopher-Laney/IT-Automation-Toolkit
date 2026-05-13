@@ -78,7 +78,7 @@ end {
         & "$scriptsPath\teams_webhook_alert.ps1" `
             -WebhookUrl $TeamsWebhook `
             -Title "IT Baseline Checks Completed" `
-            -Message ("```" + $summary + "```") `
+            -Message ('```' + $summary + '```') `
             -Severity "Info"
     }
 }

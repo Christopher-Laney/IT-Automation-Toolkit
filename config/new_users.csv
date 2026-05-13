@@ -1,2 +1,2 @@
-DisplayName,UserPrincipalName,UsageLocation,LicenseSku
-Jane Doe,jane.doe@contoso.com,US,ENTERPRISEPACK
+DisplayName,UserPrincipalName,UsageLocation,LicenseSku,Groups
+Jane Doe,jane.doe@contoso.com,US,ENTERPRISEPACK,All-Employees

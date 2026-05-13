@@ -73,11 +73,36 @@ The project emphasizes **automation, security, and scalability**, showing how a 
 
 ```powershell
 # Run onboarding workflow
-.\scripts\onboarding.ps1 -UserList ".\config\new_users.csv"
+.\scripts\identity\onboarding.ps1 -UserList ".\config\new_users.csv" -WhatIf
 
 # Generate inventory report
-.\scripts\inventory_report.ps1 -ExportPath ".\reports\inventory.csv"
+.\scripts\reporting\inventory_report.ps1 -ExportPath ".\reports\inventory.csv"
 ```
+
+---
+
+## ✅ Validation
+
+This repository includes a GitHub Actions workflow that checks PowerShell syntax, runs Pester parser tests, and runs PSScriptAnalyzer for error-level findings.
+
+You can run the no-dependency parser check locally with:
+
+```powershell
+Get-ChildItem .\scripts -Recurse -Filter *.ps1 | ForEach-Object {
+  $errors = $null
+  [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$null, [ref]$errors) | Out-Null
+  $errors | ForEach-Object { "{0}:{1}: {2}" -f $_.Extent.File, $_.Extent.StartLineNumber, $_.Message }
+}
+```
+
+---
+
+## 🔐 Safety Notes
+
+- Start with `-WhatIf` on scripts that change users, licenses, groups, policies, or files.
+- Store secrets in environment variables, Azure Key Vault, or your enterprise vault. Do not commit live tokens, webhook URLs, or connection strings.
+- Review permissions before running Graph, Intune, Exchange, Okta, or Azure automation in production tenants.
+- Treat sample config files as templates and replace tenant-specific values before use.
 
 ---
 

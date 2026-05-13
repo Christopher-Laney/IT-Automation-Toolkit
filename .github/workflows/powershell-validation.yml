@@ -1,0 +1,31 @@
+name: PowerShell Validation
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  validate:
+    name: Parse, lint, and test scripts
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install validation tools
+        shell: pwsh
+        run: |
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Install-Module Pester -Scope CurrentUser -Force -SkipPublisherCheck
+          Install-Module PSScriptAnalyzer -Scope CurrentUser -Force -SkipPublisherCheck
+
+      - name: Run parser tests
+        shell: pwsh
+        run: Invoke-Pester -Path ./tests -CI
+
+      - name: Run script analyzer
+        shell: pwsh
+        run: Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Severity Error

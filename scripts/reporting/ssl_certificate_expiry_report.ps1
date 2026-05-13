@@ -62,7 +62,7 @@ process {
             $host = $Matches[1]
         }
 
-        Write-Verbose "Checking $host:$Port ..."
+        Write-Verbose "Checking $($host):$Port ..."
 
         try {
             $tcpClient = New-Object System.Net.Sockets.TcpClient($host, $Port)
