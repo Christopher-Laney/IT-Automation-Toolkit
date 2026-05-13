@@ -1,0 +1,117 @@
+# Backup And Restore Guide
+
+This guide covers `scripts/automation/backup_automation.ps1` and `scripts/automation/restore_backup.ps1`.
+
+## Safe Preview
+
+Start with `-WhatIf` to confirm the source, destination, retention, and exclusions:
+
+```powershell
+.\scripts\automation\backup_automation.ps1 `
+  -SourcePath "D:\Data" `
+  -DestinationPath "E:\Backups" `
+  -ExcludeExtensions ".tmp",".log" `
+  -RetentionDays 14 `
+  -WhatIf
+```
+
+## Local Backup
+
+```powershell
+.\scripts\automation\backup_automation.ps1 `
+  -SourcePath "D:\Data" `
+  -DestinationPath "E:\Backups" `
+  -Tag "file-share" `
+  -RetentionDays 30
+```
+
+The script writes:
+
+- `backup-YYYYMMDD-HHMMSS[-tag].zip`
+- `backup-YYYYMMDD-HHMMSS[-tag].json`
+- A log file under the backup destination unless `-LogPath` is provided.
+
+## Encrypted Backup
+
+Generate and protect a 32-byte key outside the repository:
+
+```powershell
+$key = New-Object byte[] 32
+[System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($key)
+[System.IO.File]::WriteAllBytes("C:\Keys\backup.key", $key)
+```
+
+Run the encrypted backup:
+
+```powershell
+.\scripts\automation\backup_automation.ps1 `
+  -SourcePath "D:\Data" `
+  -DestinationPath "E:\Backups" `
+  -EncryptKeyFile "C:\Keys\backup.key"
+```
+
+The encrypted file uses the repository's documented `AES256` header followed by a 16-byte IV and AES-256-CBC encrypted ZIP content. Keep the key in a vault or protected key location. Do not commit it.
+
+## Manifest Fields
+
+The manifest includes:
+
+- `archive`: ZIP filename.
+- `sha256`: SHA256 hash of the ZIP.
+- `bytes`: ZIP size in bytes.
+- `encryptedFile`: encrypted backup filename when encryption is used.
+- `encryptedSha256`: SHA256 hash of the encrypted file.
+- `encryptedBytes`: encrypted file size in bytes.
+- `encryption`: encryption format note.
+- `createdUtc`: UTC timestamp.
+- `sourcePath`: resolved backup source path.
+- `excludedDirs` and `excludedExtensions`: exclusions used.
+- `itemsBackedUp`: selected file count.
+- `version`: manifest format version.
+
+## Restore A Plain ZIP
+
+Preview first:
+
+```powershell
+.\scripts\automation\restore_backup.ps1 `
+  -BackupPath "E:\Backups\backup-20260513-010203.zip" `
+  -ManifestPath "E:\Backups\backup-20260513-010203.json" `
+  -DestinationPath "D:\Restore" `
+  -WhatIf
+```
+
+Restore:
+
+```powershell
+.\scripts\automation\restore_backup.ps1 `
+  -BackupPath "E:\Backups\backup-20260513-010203.zip" `
+  -ManifestPath "E:\Backups\backup-20260513-010203.json" `
+  -DestinationPath "D:\Restore"
+```
+
+## Restore An Encrypted Backup
+
+```powershell
+.\scripts\automation\restore_backup.ps1 `
+  -BackupPath "E:\Backups\backup-20260513-010203.enc" `
+  -ManifestPath "E:\Backups\backup-20260513-010203.json" `
+  -EncryptKeyFile "C:\Keys\backup.key" `
+  -DestinationPath "D:\Restore"
+```
+
+By default, the temporary decrypted ZIP is removed after extraction. Add `-KeepDecryptedZip` only when you need to inspect it during a controlled recovery process.
+
+## Azure Blob Upload
+
+Use a connection string from an environment variable or managed automation secret:
+
+```powershell
+.\scripts\automation\backup_automation.ps1 `
+  -SourcePath "D:\Data" `
+  -DestinationPath "E:\Backups" `
+  -AzureConnectionString $env:AZURE_STORAGE_CONNECTION_STRING `
+  -AzureContainer "backups"
+```
+
+Do not put storage connection strings in scripts, config files, logs, or issue comments.

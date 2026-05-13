@@ -85,6 +85,8 @@ The project emphasizes **automation, security, and scalability**, showing how a 
 
 See [docs/quickstart.md](docs/quickstart.md) for a safe local walkthrough, including syntax validation, onboarding preview mode, optional server checks, and report generation.
 
+For backup and restore workflows, see [docs/backup_restore.md](docs/backup_restore.md).
+
 ---
 
 ## ✅ Validation

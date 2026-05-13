@@ -5,6 +5,7 @@
 - Expand Pester coverage beyond syntax checks into parameter and dry-run behavior.
 - Add PSScriptAnalyzer settings once project-specific style rules settle.
 - Add sample data for reports, dashboards, and baseline checks.
+- Add tests for backup retention, exclusion matching, manifest validation, and restore behavior.
 
 ## Identity Automation
 

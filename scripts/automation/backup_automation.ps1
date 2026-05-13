@@ -7,7 +7,7 @@
   - Zips a source directory to timestamped archive(s).
   - Writes SHA256 + file count/size manifest.
   - Deletes old backups by age.
-  - Optional AES-256 encrypts the ZIP to .enc using a 32-byte key file.
+  - Optional AES-256-CBC encrypts the ZIP to .enc using a 32-byte key file.
   - Optional upload to Azure Blob Storage.
   - Optional Teams/Slack-style webhook notification.
   - Supports -WhatIf for dry runs.
@@ -124,11 +124,16 @@ function New-Manifest {
   param([string]$ArchivePath,[string]$EncPath)
   $hash = Get-FileHash -Path $ArchivePath -Algorithm SHA256
   $size = (Get-Item $ArchivePath).Length
+  $encHash = if ($EncPath -and (Test-Path $EncPath)) { (Get-FileHash -Path $EncPath -Algorithm SHA256).Hash } else { $null }
+  $encBytes = if ($EncPath -and (Test-Path $EncPath)) { (Get-Item $EncPath).Length } else { $null }
   $obj = [ordered]@{
     archive           = (Split-Path -Leaf $ArchivePath)
     sha256            = $hash.Hash
     bytes             = $size
     encryptedFile     = $(if ($EncPath) { Split-Path -Leaf $EncPath } else { $null })
+    encryptedSha256   = $encHash
+    encryptedBytes    = $encBytes
+    encryption        = $(if ($EncPath) { "AES-256-CBC; header=AES256 + 16-byte IV" } else { $null })
     createdUtc        = (Get-Date).ToUniversalTime().ToString("o")
     sourcePath        = (Resolve-Path $SourcePath).Path
     excludedDirs      = $ExcludeDirs
@@ -239,6 +244,13 @@ try {
       Remove-Item -LiteralPath $tempStaging -Recurse -Force -ErrorAction SilentlyContinue
     }
     Write-Log "Archive created: $zipPath" 'INFO'
+  }
+
+  if (-not (Test-Path $zipPath)) {
+    Write-Log "Archive was not created. Skipping encryption, manifest, upload, and notification steps." 'INFO'
+    Remove-OldBackups -Folder $DestinationPath -Days $RetentionDays
+    Write-Host "Backup preview complete:`n  Planned ZIP: $zipPath"
+    exit 0
   }
 
   # Optional encryption -> .enc

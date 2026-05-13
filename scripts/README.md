@@ -29,6 +29,7 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 |  | system_health_report.ps1 | CPU/RAM/Disk status snapshot. | Daily / Weekly |
 |  | local_admin_audit.ps1 | List local admins (security). | Monthly / Audits |
 | **Automation** | backup_automation.ps1 | Backup + hashing verification. | Daily |
+|  | restore_backup.ps1 | Restore ZIP or encrypted backups. | On-demand / Recovery |
 |  | restart_failed_services.ps1 | Auto fix failed services. | Daily / Hourly for servers |
 |  | azure_resource_tagging.ps1 | Enforce tag standards. | Monthly / On resource creation |
 |  | log_cleanup.ps1 | Safe cleanup of logs/temp files. | Monthly |
