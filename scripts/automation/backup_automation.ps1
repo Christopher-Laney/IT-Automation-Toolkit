@@ -157,6 +157,28 @@ function Remove-OldBackups {
     }
 }
 
+function Test-DirectoryExcluded {
+  param(
+    [Parameter(Mandatory=$true)][string]$DirectoryPath,
+    [Parameter(Mandatory=$true)][string]$RootPath,
+    [string[]]$Patterns
+  )
+
+  if (-not $Patterns -or $Patterns.Count -eq 0) { return $false }
+
+  $relativePath = $DirectoryPath.Substring($RootPath.Length).TrimStart('\','/')
+  if (-not $relativePath) { return $false }
+
+  $segments = $relativePath -split '[\\/]'
+  foreach ($segment in $segments) {
+    foreach ($pattern in $Patterns) {
+      if ($segment -like $pattern) { return $true }
+    }
+  }
+
+  return $false
+}
+
 function Post-Webhook {
   param([string]$Url,[hashtable]$Payload)
   try {
@@ -206,11 +228,9 @@ try {
   # Build file list with exclusions
   $allFiles = Get-ChildItem -LiteralPath $SourcePath -Recurse -File -Force -ErrorAction Stop
   if ($ExcludeDirs -and $ExcludeDirs.Count -gt 0) {
-    $dirSet = $ExcludeDirs
+    $sourceRoot = (Resolve-Path -LiteralPath $SourcePath).Path.TrimEnd('\','/')
     $allFiles = $allFiles | Where-Object {
-      $parent = $_.DirectoryName
-      # exclude if any excluded dir name is part of its path
-      -not ($dirSet | Where-Object { $parent -like "*\$_*" -or $parent -like "*/$_/*" })
+      -not (Test-DirectoryExcluded -DirectoryPath $_.DirectoryName -RootPath $sourceRoot -Patterns $ExcludeDirs)
     }
   }
   if ($ExcludeExtensions -and $ExcludeExtensions.Count -gt 0) {
@@ -250,7 +270,7 @@ try {
     Write-Log "Archive was not created. Skipping encryption, manifest, upload, and notification steps." 'INFO'
     Remove-OldBackups -Folder $DestinationPath -Days $RetentionDays
     Write-Host "Backup preview complete:`n  Planned ZIP: $zipPath"
-    exit 0
+    return
   }
 
   # Optional encryption -> .enc
@@ -310,12 +330,11 @@ try {
 
   Write-Log "Backup complete." 'INFO'
   Write-Host "Backup complete:`n  ZIP: $zipPath`n  Manifest: $manifestPath`n  Encrypted: $encPath"
-  exit 0
 }
 catch {
   Write-Log "Backup FAILED: $($_.Exception.Message)" 'ERROR'
   if ($WebhookUrl) {
     Post-Webhook -Url $WebhookUrl -Payload @{ text = "Backup FAILED: $($_.Exception.Message)"; summary="Backup FAILED" }
   }
-  exit 1
+  throw
 }
