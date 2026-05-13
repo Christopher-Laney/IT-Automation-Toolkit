@@ -48,7 +48,7 @@ Then run operational checks only after the server list is accurate:
 
 ```powershell
 .\scripts\reporting\inventory_report.ps1 -ExportPath .\reports\inventory.csv
-.\scripts\reporting\generate_it_audit_dashboard.ps1 -OutputPath .\reports\it_audit_dashboard.html
+.\scripts\reporting\generate_it_audit_dashboard.ps1 -ConfigPath .\config\dashboard_reports.json -OutputPath .\reports\it_audit_dashboard.html
 ```
 
 Generated reports are ignored by git by default.

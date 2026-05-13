@@ -12,6 +12,12 @@
 .PARAMETER Reports
   Hashtable mapping section titles to CSV paths.
 
+.PARAMETER ConfigPath
+  Optional JSON file with report title/path pairs. Defaults to config/dashboard_reports.json when present.
+
+.PARAMETER MaxRows
+  Maximum rows to display per report section. Default: 100.
+
 .EXAMPLE
   .\generate_it_audit_dashboard.ps1 -OutputPath .\reports\it_audit_dashboard.html
 #>
@@ -20,13 +26,17 @@
 param(
     [string]$OutputPath = ".\reports\it_audit_dashboard.html",
 
+    [string]$ConfigPath,
+
     [hashtable]$Reports = @{
         "Inactive Users"        = ".\reports\inactive_users.csv";
         "Local Administrators"  = ".\reports\local_admins.csv";
         "Intune Compliance"     = ".\reports\intune_compliance.csv";
         "M365 License Audit"    = ".\reports\m365_license_audit.csv";
         "SSL Certificate Status"= ".\reports\ssl_expiry.csv"
-    }
+    },
+
+    [int]$MaxRows = 100
 )
 
 begin {
@@ -38,29 +48,85 @@ begin {
     }
 
     $sectionsHtml = @()
+    $summaryRows = @()
+    $missingReports = @()
+
+    if (-not $ConfigPath -and -not $PSBoundParameters.ContainsKey('Reports')) {
+        $defaultConfig = ".\config\dashboard_reports.json"
+        if (Test-Path $defaultConfig) { $ConfigPath = $defaultConfig }
+    }
+
+    if ($ConfigPath) {
+        if (-not (Test-Path $ConfigPath)) { throw "Dashboard config not found: $ConfigPath" }
+        $config = Get-Content -Raw -Path $ConfigPath | ConvertFrom-Json
+        $Reports = @{}
+        foreach ($report in $config.reports) {
+            if (-not $report.title -or -not $report.path) {
+                throw "Each dashboard report config item must include title and path."
+            }
+            $Reports[$report.title] = $report.path
+        }
+    }
 }
 
 process {
-    foreach ($key in $Reports.Keys) {
+    foreach ($key in ($Reports.Keys | Sort-Object)) {
         $path = $Reports[$key]
         if (-not (Test-Path $path)) {
             Write-Warning "Report not found for '$key': $path"
+            $missingReports += [pscustomobject]@{
+                Title = $key
+                Path = $path
+            }
             continue
         }
 
         Write-Verbose "Loading $key from $path ..."
         $data = Import-Csv -Path $path
+        $rowCount = @($data).Count
 
-        $table = $data | Select-Object -First 100 | ConvertTo-Html -As Table -PreContent "<h3>$key</h3>" -Fragment
+        $summaryRows += [pscustomobject]@{
+            Report = $key
+            Rows = $rowCount
+            Path = $path
+        }
+
+        $table = $data |
+            Select-Object -First $MaxRows |
+            ConvertTo-Html -As Table -PreContent "<h2>$key</h2><p class='meta'>$rowCount rows found. Showing up to $MaxRows.</p>" -Fragment
         $sectionsHtml += $table
     }
 }
 
 end {
+    $summaryHtml = if ($summaryRows.Count -gt 0) {
+        $summaryRows | ConvertTo-Html -As Table -PreContent "<h2>Report Summary</h2>" -Fragment
+    } else {
+        "<h2>Report Summary</h2><p>No report files were found.</p>"
+    }
+
+    $missingHtml = if ($missingReports.Count -gt 0) {
+        $missingReports | ConvertTo-Html -As Table -PreContent "<h2>Missing Reports</h2><p class='warning'>These configured report files were not found.</p>" -Fragment
+    } else {
+        "<h2>Missing Reports</h2><p>None.</p>"
+    }
+
     $body = @"
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; margin: 32px; color: #1f2933; }
+h1 { margin-bottom: 0; }
+h2 { margin-top: 32px; border-bottom: 1px solid #d9e2ec; padding-bottom: 6px; }
+table { border-collapse: collapse; width: 100%; margin: 12px 0 24px; font-size: 13px; }
+th { background: #f0f4f8; text-align: left; }
+th, td { border: 1px solid #d9e2ec; padding: 8px; vertical-align: top; }
+.meta { color: #52606d; }
+.warning { color: #9a3412; font-weight: 600; }
+</style>
 <h1>IT Audit Dashboard</h1>
 <p>Generated: $(Get-Date)</p>
 <hr/>
+$summaryHtml
+$missingHtml
 $($sectionsHtml -join "`n")
 "@
 
