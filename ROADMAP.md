@@ -2,9 +2,9 @@
 
 ## Reliability
 
-- Expand Pester coverage beyond syntax checks into parameter and dry-run behavior.
+- Continue expanding Pester coverage into backup safety, report generation, and dry-run behavior.
 - Add PSScriptAnalyzer settings once project-specific style rules settle.
-- Add sample data for reports, dashboards, and baseline checks.
+- Add sample data for baseline checks and backup verification.
 - Add tests for backup retention, exclusion matching, manifest validation, and restore behavior.
 
 ## Identity Automation
@@ -19,7 +19,7 @@
 - Add Power BI template documentation and sample dashboard source guidance.
 - Add report normalization so dashboard generation can consume consistent CSV schemas.
 - Add scheduled run examples for Task Scheduler, Azure Automation, and GitHub Actions.
-- Expand Intune template validation into Pester tests and optional JSON schema checks.
+- Add optional JSON schema checks for Intune policy templates.
 - Add generated screenshot refresh guidance for dashboard sample data.
 
 ## Notifications
