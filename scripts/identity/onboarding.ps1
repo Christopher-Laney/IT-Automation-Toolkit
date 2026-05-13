@@ -280,7 +280,7 @@ try {
         UsageLocation   = ( if ($u.UsageLocation) { $u.UsageLocation } else { $DefaultUsageLocation } )
         Notes           = ""
       }
-      Write-Host "✔ $upn: $action; Licenses=$licenseStatus; GroupsAdded=[$($groupsAdded -join ', ')]"
+      Write-Host "✔ $($upn): $action; Licenses=$licenseStatus; GroupsAdded=[$($groupsAdded -join ', ')]"
     }
     catch {
       $report += [pscustomobject]@{

@@ -50,7 +50,7 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 
 # Audit Intune device compliance
 .\compliance\intune_device_compliance_audit.ps1 -ExportPath ".\reports\intune.csv"
-
+```
 
 ## 🏗 Integration Ideas
 

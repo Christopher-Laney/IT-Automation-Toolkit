@@ -6,9 +6,7 @@
 *.bak
 *.old
 
-# Ignore PowerShell data files
-*.psd1
-*.psm1
+# Ignore debug symbols
 *.pdb
 
 # Ignore compiled scripts or packaged modules

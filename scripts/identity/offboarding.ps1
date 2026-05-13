@@ -249,7 +249,7 @@ function SPO-OneDriveActions($upn, [int]$retentionDays, $successorUpn) {
       # OneDrive retention via SPO admin center normally; here we set a simple lock marker file:
       $marker = "AccountLocked_$((Get-Date).ToString('yyyyMMdd-HHmmss')).txt"
       $content = "OneDrive locked for $upn, retention: $retentionDays days"
-      Invoke-MgGraphRequest -Method PUT -Uri "https://graph.microsoft.com/v1.0/users/$upn/drive/root:/$marker:/content" -Body $content | Out-Null
+      Invoke-MgGraphRequest -Method PUT -Uri "https://graph.microsoft.com/v1.0/users/$upn/drive/root:/$($marker):/content" -Body $content | Out-Null
       Write-Log "OneDrive lock marker created. (Retention policy should be configured centrally.)" "INFO"
     }
     if ($successorUpn) {
@@ -326,10 +326,10 @@ try {
   exit 0
 }
 catch {
-  Write-Log "Offboarding FAILED for $UserPrincipalName: $($_.Exception.Message)" 'ERROR'
+  Write-Log "Offboarding FAILED for $($UserPrincipalName): $($_.Exception.Message)" 'ERROR'
   if ($NotifyWebhook) {
     Post-Webhook -Url $NotifyWebhook -Payload @{
-      text="Offboarding FAILED for $UserPrincipalName: $($_.Exception.Message)"; summary="Offboarding failed"
+      text="Offboarding FAILED for $($UserPrincipalName): $($_.Exception.Message)"; summary="Offboarding failed"
     }
   }
   throw
