@@ -73,6 +73,65 @@ Describe 'Backup and restore automation' {
         } | Should -Throw -ExpectedMessage '*SHA256 mismatch*'
     }
 
+    It 'restores encrypted backups and removes the temporary decrypted ZIP' {
+        $keyPath = Join-Path $script:CaseRoot 'backup.key'
+        [System.IO.File]::WriteAllBytes($keyPath, [byte[]](0..31))
+
+        & $script:BackupScript `
+            -SourcePath $script:SourcePath `
+            -DestinationPath $script:BackupPath `
+            -EncryptKeyFile $keyPath `
+            -Tag 'encrypted'
+
+        $archives = @(Get-ChildItem -Path $script:BackupPath -Filter 'backup-*-encrypted.zip')
+        $encryptedArchives = @(Get-ChildItem -Path $script:BackupPath -Filter 'backup-*-encrypted.enc')
+        $archives | Should -HaveCount 1
+        $encryptedArchives | Should -HaveCount 1
+
+        $zip = $archives[0]
+        $encryptedArchive = $encryptedArchives[0]
+        $manifestPath = [System.IO.Path]::ChangeExtension($zip.FullName, '.json')
+        $manifest = Get-Content -Raw -Path $manifestPath | ConvertFrom-Json
+
+        $manifest.encryptedFile | Should -Be $encryptedArchive.Name
+        $manifest.encryptedSha256 | Should -Be (Get-FileHash -Path $encryptedArchive.FullName -Algorithm SHA256).Hash
+        $manifest.encryption | Should -Match 'AES-256-CBC'
+
+        $restorePath = Join-Path $script:CaseRoot 'encrypted-restore'
+        & $script:RestoreScript `
+            -BackupPath $encryptedArchive.FullName `
+            -ManifestPath $manifestPath `
+            -EncryptKeyFile $keyPath `
+            -DestinationPath $restorePath
+
+        Test-Path (Join-Path $restorePath 'root.txt') | Should -BeTrue
+        Test-Path (Join-Path $restorePath 'nested/data.csv') | Should -BeTrue
+        Test-Path ([System.IO.Path]::ChangeExtension($encryptedArchive.FullName, '.decrypted.zip')) | Should -BeFalse
+    }
+
+    It 'removes expired backup artifacts during retention cleanup' {
+        foreach ($extension in 'zip', 'enc', 'json') {
+            $oldPath = Join-Path $script:BackupPath "backup-20000101-000000-old.$extension"
+            Set-Content -Path $oldPath -Value 'old backup artifact'
+            (Get-Item -Path $oldPath).LastWriteTime = (Get-Date).AddDays(-10)
+        }
+
+        $unrelatedPath = Join-Path $script:BackupPath 'notes.txt'
+        Set-Content -Path $unrelatedPath -Value 'do not remove'
+        (Get-Item -Path $unrelatedPath).LastWriteTime = (Get-Date).AddDays(-10)
+
+        & $script:BackupScript `
+            -SourcePath $script:SourcePath `
+            -DestinationPath $script:BackupPath `
+            -RetentionDays 1 `
+            -Tag 'retention'
+
+        @(Get-ChildItem -Path $script:BackupPath -Filter 'backup-20000101-000000-old.*') | Should -BeNullOrEmpty
+        Test-Path $unrelatedPath | Should -BeTrue
+        @(Get-ChildItem -Path $script:BackupPath -Filter 'backup-*-retention.zip') | Should -HaveCount 1
+        @(Get-ChildItem -Path $script:BackupPath -Filter 'backup-*-retention.json') | Should -HaveCount 1
+    }
+
     It 'previews backup work with WhatIf without creating an archive' {
         & $script:BackupScript `
             -SourcePath $script:SourcePath `
