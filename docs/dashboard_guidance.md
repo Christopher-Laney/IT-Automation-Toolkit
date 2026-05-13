@@ -9,8 +9,10 @@ Generated CSV and HTML reports are ignored by git. Keep dashboard source guidanc
 Recommended tracked assets:
 
 - `config/dashboard_reports.json`: dashboard report map.
+- `config/dashboard_reports.sample.json`: sample-data dashboard report map.
 - `docs/dashboard_guidance.md`: dashboard instructions and expected schemas.
 - `dashboards/sample_output_screenshot.png`: representative screenshot.
+- `samples/reports/*.csv`: sanitized sample report data for demos.
 
 Avoid committing:
 
@@ -33,6 +35,18 @@ The dashboard includes:
 - A report summary with row counts.
 - A missing-report table for configured CSV files that do not exist yet.
 - Up to `-MaxRows` rows per report section.
+
+## Generate A Demo Dashboard
+
+Use the included sanitized sample data to preview the dashboard without connecting to Microsoft 365, Intune, or Windows hosts:
+
+```powershell
+.\scripts\reporting\generate_it_audit_dashboard.ps1 `
+  -ConfigPath .\config\dashboard_reports.sample.json `
+  -OutputPath .\reports\sample_it_audit_dashboard.html
+```
+
+This uses CSV files in `samples/reports`. The sample data is intentionally fictional and safe to commit.
 
 ## Configure Report Inputs
 
@@ -66,6 +80,8 @@ The dashboard can render any CSV, but these are the expected report files for th
 | M365 License Audit | `.\reports\m365_license_audit.csv` | `scripts/reporting/m365_license_audit.ps1` |
 | SSL Certificate Status | `.\reports\ssl_expiry.csv` | `scripts/reporting/ssl_certificate_expiry_report.ps1` |
 | System Health | `.\reports\system_health.csv` | `scripts/reporting/system_health_report.ps1` |
+
+For demo data, use the matching files under `samples/reports`.
 
 ## Power BI Guidance
 

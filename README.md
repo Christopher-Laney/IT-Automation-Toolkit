@@ -90,6 +90,7 @@ For backup and restore workflows, see [docs/backup_restore.md](docs/backup_resto
 For Intune policy validation and deployment, see [docs/intune_policy_templates.md](docs/intune_policy_templates.md).
 
 For dashboard generation and Power BI source guidance, see [docs/dashboard_guidance.md](docs/dashboard_guidance.md).
+The repository also includes sanitized sample CSVs under `samples/reports` for a no-tenant dashboard demo.
 
 ---
 

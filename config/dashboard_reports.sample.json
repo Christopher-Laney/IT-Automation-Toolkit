@@ -1,0 +1,28 @@
+{
+  "reports": [
+    {
+      "title": "Inactive Users",
+      "path": ".\\samples\\reports\\inactive_users.csv"
+    },
+    {
+      "title": "Local Administrators",
+      "path": ".\\samples\\reports\\local_admins.csv"
+    },
+    {
+      "title": "Intune Compliance",
+      "path": ".\\samples\\reports\\intune_compliance.csv"
+    },
+    {
+      "title": "M365 License Audit",
+      "path": ".\\samples\\reports\\m365_license_audit.csv"
+    },
+    {
+      "title": "SSL Certificate Status",
+      "path": ".\\samples\\reports\\ssl_expiry.csv"
+    },
+    {
+      "title": "System Health",
+      "path": ".\\samples\\reports\\system_health.csv"
+    }
+  ]
+}

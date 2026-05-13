@@ -20,7 +20,7 @@
 - Add report normalization so dashboard generation can consume consistent CSV schemas.
 - Add scheduled run examples for Task Scheduler, Azure Automation, and GitHub Actions.
 - Expand Intune template validation into Pester tests and optional JSON schema checks.
-- Add sanitized sample CSVs for dashboard screenshots and demo generation.
+- Add generated screenshot refresh guidance for dashboard sample data.
 
 ## Notifications
 
