@@ -5,7 +5,7 @@
 - Continue expanding Pester coverage into backup safety, report generation, and dry-run behavior.
 - Add PSScriptAnalyzer settings once project-specific style rules settle.
 - Add sample data for baseline checks and backup verification.
-- Add tests for backup retention cleanup and encrypted restore behavior.
+- Add tests for Azure upload mocks and webhook notification handling.
 
 ## Identity Automation
 
