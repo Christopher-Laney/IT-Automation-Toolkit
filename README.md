@@ -106,6 +106,7 @@ Get-ChildItem .\scripts -Recurse -Filter *.ps1 | ForEach-Object {
 ## 🔐 Safety Notes
 
 - Start with `-WhatIf` on scripts that change users, licenses, groups, policies, or files.
+- Onboarding reports omit generated temporary passwords by default. Only enable password export for controlled demos or secure handoff workflows.
 - Store secrets in environment variables, Azure Key Vault, or your enterprise vault. Do not commit live tokens, webhook URLs, or connection strings.
 - Review permissions before running Graph, Intune, Exchange, Okta, or Azure automation in production tenants.
 - Treat sample config files as templates and replace tenant-specific values before use.

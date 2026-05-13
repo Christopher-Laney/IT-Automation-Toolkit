@@ -30,6 +30,9 @@
 .PARAMETER SetTempPassword
   If set, a random password is applied with force-change at next sign-in.
 
+.PARAMETER IncludeTemporaryPasswordInReport
+  If set, includes generated temporary passwords in the report CSV. Disabled by default to avoid writing secrets to plain text output.
+
 .PARAMETER MfaGroup
   Display name or ID of a group that enforces MFA via Conditional Access.
 
@@ -38,9 +41,6 @@
 
 .PARAMETER ReportPath
   Optional path to write a run report CSV.
-
-.PARAMETER WhatIf
-  Show what would happen without changing anything.
 
 .REQUIREMENTS
   Install-Module Microsoft.Graph -Scope CurrentUser
@@ -62,10 +62,10 @@ param(
   [string]$DefaultUsageLocation,
   [int]$DefaultPasswordLength = 16,
   [switch]$SetTempPassword,
+  [switch]$IncludeTemporaryPasswordInReport,
   [string]$MfaGroup,
   [string]$IntuneEnrollmentGroup,
-  [string]$ReportPath,
-  [switch]$WhatIf
+  [string]$ReportPath
 )
 
 # ----------------- helpers -----------------
@@ -219,12 +219,59 @@ function Ensure-ReportDir($path) {
   if ($dir -and -not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir | Out-Null }
 }
 
+function Test-RequiredCsvHeaders {
+  param(
+    [Parameter(Mandatory=$true)][object[]]$Rows,
+    [Parameter(Mandatory=$true)][string[]]$RequiredHeaders
+  )
+
+  if (-not $Rows -or $Rows.Count -eq 0) {
+    throw "CSV contains no user rows."
+  }
+
+  $headers = @($Rows[0].PSObject.Properties.Name)
+  $missing = $RequiredHeaders | Where-Object { $headers -notcontains $_ }
+  if ($missing) {
+    throw "CSV is missing required header(s): $($missing -join ', ')."
+  }
+}
+
+function Test-UserRow {
+  param(
+    [Parameter(Mandatory=$true)][object]$Row,
+    [Parameter(Mandatory=$true)][int]$RowNumber,
+    [string]$DefaultUsageLocation
+  )
+
+  $errors = @()
+  if (-not $Row.DisplayName) { $errors += "DisplayName is required" }
+  if (-not $Row.UserPrincipalName) {
+    $errors += "UserPrincipalName is required"
+  } elseif ($Row.UserPrincipalName -notmatch '^[^@\s]+@[^@\s]+\.[^@\s]+$') {
+    $errors += "UserPrincipalName is not a valid email-style UPN"
+  }
+  if (-not $Row.UsageLocation -and -not $DefaultUsageLocation) {
+    $errors += "UsageLocation is required when DefaultUsageLocation is not provided"
+  }
+
+  if ($errors.Count -gt 0) {
+    throw "CSV row $RowNumber failed validation: $($errors -join '; ')."
+  }
+}
+
 # ----------------- main -----------------
 try {
-  Ensure-Graph
-
   if (-not (Test-Path $UserList)) { throw "CSV not found: $UserList" }
   $rows = Import-Csv -Path $UserList
+  Test-RequiredCsvHeaders -Rows $rows -RequiredHeaders @('DisplayName','UserPrincipalName','UsageLocation','LicenseSku','Groups')
+
+  $validationRowNumber = 1
+  foreach ($row in $rows) {
+    $validationRowNumber++
+    Test-UserRow -Row $row -RowNumber $validationRowNumber -DefaultUsageLocation $DefaultUsageLocation
+  }
+
+  Ensure-Graph
 
   $skuMap = Get-SkuMap
   $mfaGroupId    = if ($MfaGroup) { Resolve-GroupId -NameOrId $MfaGroup } else { $null }
@@ -235,7 +282,6 @@ try {
   foreach ($u in $rows) {
     $upn = $u.UserPrincipalName
     $action = "Skipped"
-    $pwdOut = $null
     $licenseStatus = "None"
     $licenseAdded  = @()
     $groupsAdded   = @()
@@ -271,14 +317,14 @@ try {
         UserPrincipalName = $upn
         DisplayName     = $u.DisplayName
         Action          = $action
-        TempPasswordSet = [bool]$SetTempPassword
-        TempPassword    = $pwd
+        TempPasswordGenerated = [bool]$pwd
+        TempPassword    = if ($IncludeTemporaryPasswordInReport) { $pwd } else { $null }
         LicenseStatus   = $licenseStatus
         LicensesAdded   = ($licenseAdded -join ';')
         GroupsRequested = $u.Groups
         GroupsAdded     = ($groupsAdded -join ';')
         UsageLocation   = ( if ($u.UsageLocation) { $u.UsageLocation } else { $DefaultUsageLocation } )
-        Notes           = ""
+        Notes           = if ($pwd -and -not $IncludeTemporaryPasswordInReport) { "Temporary password generated but omitted from report." } else { "" }
       }
       Write-Host "✔ $($upn): $action; Licenses=$licenseStatus; GroupsAdded=[$($groupsAdded -join ', ')]"
     }
@@ -288,7 +334,7 @@ try {
         UserPrincipalName = $upn
         DisplayName     = $u.DisplayName
         Action          = "Error"
-        TempPasswordSet = [bool]$SetTempPassword
+        TempPasswordGenerated = $false
         TempPassword    = $null
         LicenseStatus   = "Error"
         LicensesAdded   = ""
