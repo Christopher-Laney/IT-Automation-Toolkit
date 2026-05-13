@@ -15,6 +15,8 @@ Start with `-WhatIf` to confirm the source, destination, retention, and exclusio
   -WhatIf
 ```
 
+`-ExcludeDirs` compares each directory path segment against the supplied values, so both exact names and wildcards work across platforms. For example, `-ExcludeDirs "node_modules","cache*"` excludes any folder named `node_modules` and any folder whose name starts with `cache`.
+
 ## Local Backup
 
 ```powershell
