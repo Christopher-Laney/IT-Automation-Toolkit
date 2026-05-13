@@ -1,0 +1,3 @@
+ComputerName,AdminAccount,AccountType,Approved,Notes
+LAPTOP-014,CONTOSO\IT-Workstation-Admins,Group,Yes,Standard endpoint admin group
+LAPTOP-022,CONTOSO\legacy.localadmin,User,No,Remove during next remediation window

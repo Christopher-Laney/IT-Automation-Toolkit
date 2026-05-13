@@ -1,0 +1,3 @@
+ComputerName,Status,CpuPercent,MemoryUsedPercent,DiskSummary,TimestampUTC
+SRV-FILE-01,OK,18,64,"C: 240GB total/88GB free (63% used)",2026-05-12T16:00:00Z
+SRV-APP-02,Warning,76,82,"C: 180GB total/18GB free (90% used)",2026-05-12T16:00:00Z

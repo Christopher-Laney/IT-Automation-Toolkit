@@ -1,0 +1,3 @@
+DeviceName,UserPrincipalName,OS,ComplianceState,LastCheckIn,Issue
+LAPTOP-014,alex.rivera@example.com,Windows 11,Compliant,2026-05-12T15:20:00Z,
+LAPTOP-022,sam.chen@example.com,Windows 10,NonCompliant,2026-05-11T18:05:00Z,BitLocker disabled

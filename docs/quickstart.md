@@ -53,6 +53,12 @@ Then run operational checks only after the server list is accurate:
 
 Generated reports are ignored by git by default.
 
+To preview the dashboard with sanitized sample data:
+
+```powershell
+.\scripts\reporting\generate_it_audit_dashboard.ps1 -ConfigPath .\config\dashboard_reports.sample.json -OutputPath .\reports\sample_it_audit_dashboard.html
+```
+
 ## 6. Validate An Intune Policy Template
 
 Validate the template before connecting to Microsoft Graph:

@@ -1,0 +1,3 @@
+UserPrincipalName,DisplayName,Department,LastSignIn,DaysInactive,RecommendedAction
+alex.rivera@example.com,Alex Rivera,Finance,2026-03-28,46,Review manager approval
+sam.chen@example.com,Sam Chen,Operations,2026-02-14,88,Disable after ticket confirmation
