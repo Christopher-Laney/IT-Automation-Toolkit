@@ -87,6 +87,8 @@ See [docs/quickstart.md](docs/quickstart.md) for a safe local walkthrough, inclu
 
 For backup and restore workflows, see [docs/backup_restore.md](docs/backup_restore.md).
 
+For Intune policy validation and deployment, see [docs/intune_policy_templates.md](docs/intune_policy_templates.md).
+
 ---
 
 ## ✅ Validation

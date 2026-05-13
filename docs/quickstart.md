@@ -52,3 +52,13 @@ Then run operational checks only after the server list is accurate:
 ```
 
 Generated reports are ignored by git by default.
+
+## 6. Validate An Intune Policy Template
+
+Validate the template before connecting to Microsoft Graph:
+
+```powershell
+.\scripts\compliance\apply_intune_policy.ps1 -Path .\config\intune_policy_template.json -ValidateOnly
+```
+
+Use `-WhatIf` next when you are ready to preview policy deployment in a tenant.

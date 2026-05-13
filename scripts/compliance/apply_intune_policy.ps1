@@ -14,16 +14,20 @@
 .PARAMETER Path
   Path to the JSON file. Defaults to ./config/intune_policy_template.json
 
-.PARAMETER WhatIf
-  Show what would happen without making changes.
+.PARAMETER ValidateOnly
+  Validate the template schema and exit before connecting to Microsoft Graph.
 
 .EXAMPLE
   .\apply_intune_policy.ps1
+
+.EXAMPLE
+  .\apply_intune_policy.ps1 -Path .\config\intune_policy_template.json -ValidateOnly
 #>
 
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
-  [string]$Path = ".\config\intune_policy_template.json"
+  [string]$Path = ".\config\intune_policy_template.json",
+  [switch]$ValidateOnly
 )
 
 function Ensure-Graph {
@@ -40,6 +44,61 @@ function Get-CompliancePolicyByName {
   param([string]$Name)
   $uri = "https://graph.microsoft.com/beta/deviceManagement/deviceCompliancePolicies`?$filter=displayName eq '$($Name.Replace("'","''"))'"
   (Invoke-MgGraphRequest -Method GET -Uri $uri).value
+}
+
+function Test-RequiredProperty {
+  param(
+    [Parameter(Mandatory=$true)][hashtable]$InputObject,
+    [Parameter(Mandatory=$true)][string]$Name,
+    [Parameter(Mandatory=$true)][string]$Context
+  )
+
+  if (-not $InputObject.ContainsKey($Name) -or $null -eq $InputObject[$Name] -or $InputObject[$Name] -eq '') {
+    throw "$Context is missing required property '$Name'."
+  }
+}
+
+function Test-IntunePolicyTemplate {
+  param([Parameter(Mandatory=$true)][hashtable]$Template)
+
+  Test-RequiredProperty -InputObject $Template -Name 'policyName' -Context 'Template'
+  Test-RequiredProperty -InputObject $Template -Name 'description' -Context 'Template'
+  Test-RequiredProperty -InputObject $Template -Name 'platforms' -Context 'Template'
+  Test-RequiredProperty -InputObject $Template -Name 'complianceSettings' -Context 'Template'
+  Test-RequiredProperty -InputObject $Template -Name 'remediationActions' -Context 'Template'
+
+  $supportedPlatforms = @('Windows10','Windows11','macOS','iOS','Android')
+  foreach ($platform in @($Template.platforms)) {
+    if ($supportedPlatforms -notcontains $platform) {
+      throw "Unsupported platform '$platform'. Supported values: $($supportedPlatforms -join ', ')."
+    }
+  }
+
+  $requiredSettings = @(
+    'requireBitLocker',
+    'firewallEnabled',
+    'passwordRequired',
+    'passwordMinimumLength',
+    'passwordExpirationDays',
+    'passwordPreviousPasswordBlockCount',
+    'osMinimumVersion',
+    'jailbreakDetectionEnabled',
+    'secureBootEnabled',
+    'codeIntegrityEnabled',
+    'deviceThreatProtectionRequiredSecurityLevel',
+    'antivirusRequired'
+  )
+
+  foreach ($setting in $requiredSettings) {
+    Test-RequiredProperty -InputObject $Template.complianceSettings -Name $setting -Context 'complianceSettings'
+  }
+
+  foreach ($actionKey in @('1','2')) {
+    if (-not $Template.remediationActions.ContainsKey($actionKey)) {
+      throw "remediationActions is missing required action '$actionKey'."
+    }
+    Test-RequiredProperty -InputObject $Template.remediationActions[$actionKey] -Name 'gracePeriodHours' -Context "remediationActions.$actionKey"
+  }
 }
 
 function NewOrUpdate-CompliancePolicy {
@@ -152,6 +211,12 @@ function NewOrUpdate-CompliancePolicy {
 # --- main ---
 if (-not (Test-Path $Path)) { throw "JSON not found: $Path" }
 $template = Get-Content -Raw -Path $Path | ConvertFrom-Json -AsHashtable
+Test-IntunePolicyTemplate -Template $template
+
+if ($ValidateOnly) {
+  Write-Host "Template validation passed: $Path"
+  return
+}
 
 Ensure-Graph
 

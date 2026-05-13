@@ -1,69 +1,70 @@
 {
-  "policyName": "Baseline Compliance Policy: Windows 10/11",
-  "description": "Baseline compliance policy template for corporate Windows 10/11 devices.",
-  "platform": "Windows10AndLater",
-  "version": 1,
-  "scopeTags": [
-    "Default",
-    "Corp"
+  "policyName": "Baseline Compliance Policy",
+  "description": "Default compliance policy enforcing encryption, password, and security baselines for corporate devices.",
+  "platforms": [
+    "Windows10",
+    "Windows11",
+    "macOS",
+    "iOS",
+    "Android"
   ],
-  "osMinimumVersion": "10.0.19045",
-  "osMaximumVersion": null,
-  "requireBitLocker": true,
-  "passwordRequired": true,
-  "passwordMinimumLength": 8,
-  "passwordRequiredType": "alphanumeric",
-  "firewallEnabled": true,
-  "deviceThreatProtectionRequired": false,
-  "jailBrokenBlocked": true,
-  "secureBootRequired": true,
-  "codeIntegrityRequired": true,
-  "defenderEnabled": true,
-  "settings": {
-    "systemSecurity": {
-      "requireSecureBoot": true,
-      "requireTPM": true,
-      "blockSimplePasswords": true,
-      "passwordExpirationDays": 365,
-      "passwordHistoryCount": 5
+  "scope": {
+    "includeGroups": [
+      "AllDevices"
+    ],
+    "excludeGroups": [
+      "KioskDevices",
+      "LabSystems"
+    ]
+  },
+  "complianceSettings": {
+    "requireBitLocker": true,
+    "firewallEnabled": true,
+    "passwordRequired": true,
+    "passwordMinimumLength": 8,
+    "passwordExpirationDays": 90,
+    "passwordPreviousPasswordBlockCount": 5,
+    "osMinimumVersion": "10.0.19045",
+    "osMaximumVersion": null,
+    "jailbreakDetectionEnabled": true,
+    "secureBootEnabled": true,
+    "codeIntegrityEnabled": true,
+    "deviceThreatProtectionRequiredSecurityLevel": "medium",
+    "antivirusRequired": true,
+    "automaticUpdatesEnabled": true
+  },
+  "deviceHealthAttestation": {
+    "requireTPM": true,
+    "requireSecureBoot": true,
+    "requireCodeIntegrity": true
+  },
+  "conditionalAccessIntegration": {
+    "markNonCompliantAfterDays": 3,
+    "notifyUserOnNonCompliance": true,
+    "emailNotificationRecipients": [
+      "it-admins@yourdomain.com"
+    ]
+  },
+  "remediationActions": {
+    "1": {
+      "action": "NotifyUser",
+      "gracePeriodHours": 24
     },
-    "encryption": {
-      "requireDeviceEncryption": true,
-      "bitLockerRecoveryKeyEscrow": "AzureAD"
-    },
-    "defender": {
-      "realTimeProtectionRequired": true,
-      "cloudProtectionEnabled": true,
-      "automaticSampleSubmission": true
-    },
-    "deviceHealth": {
-      "osMinimumVersion": "10.0.19045",
-      "requireUpToDateOS": true,
-      "maxDaysSinceLastUpdate": 30
+    "2": {
+      "action": "BlockAccess",
+      "gracePeriodHours": 72
     }
   },
-  "nonComplianceActions": [
-    {
-      "action": "sendEmailToUser",
-      "gracePeriodDays": 0,
-      "templateName": "Non-compliance notification"
-    },
-    {
-      "action": "markDeviceNonCompliant",
-      "gracePeriodDays": 0
-    },
-    {
-      "action": "sendEmailToAdmin",
-      "gracePeriodDays": 1,
-      "recipients": [
-        "it-ops@contoso.com"
-      ]
-    }
-  ],
+  "reporting": {
+    "generateComplianceReports": true,
+    "exportToLogAnalytics": true,
+    "reportFrequency": "daily"
+  },
   "metadata": {
-    "owner": "Endpoint-Management",
-    "createdBy": "Template",
-    "lastUpdatedBy": "Template",
-    "notes": "Used as a baseline for Intune compliance policy automation. Map these fields into Microsoft Graph deviceManagement compliancePolicy payloads."
+    "createdBy": "Claney",
+    "lastModified": "2026-05-13T00:00:00Z",
+    "version": "3.5",
+    "policyTemplate": "Enterprise Baseline - Security Hardened",
+    "notes": "Schema is compatible with apply_intune_policy.ps1. Validate with -ValidateOnly before deployment."
   }
 }

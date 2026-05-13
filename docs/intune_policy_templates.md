@@ -1,0 +1,70 @@
+# Intune Policy Templates
+
+This project includes Intune compliance policy templates for use with `scripts/compliance/apply_intune_policy.ps1`.
+
+## Validate Before Deployment
+
+Always validate the template before connecting to Microsoft Graph or changing policies:
+
+```powershell
+.\scripts\compliance\apply_intune_policy.ps1 `
+  -Path .\config\intune_policy_template.json `
+  -ValidateOnly
+```
+
+Validation checks:
+
+- Required top-level fields: `policyName`, `description`, `platforms`, `complianceSettings`, and `remediationActions`.
+- Supported platforms: `Windows10`, `Windows11`, `macOS`, `iOS`, and `Android`.
+- Required compliance settings used by the deployment payload.
+- Required remediation actions `1` and `2`, including `gracePeriodHours`.
+
+## Deploy With Preview
+
+Use `-WhatIf` after validation to preview policy creation or updates:
+
+```powershell
+.\scripts\compliance\apply_intune_policy.ps1 `
+  -Path .\config\intune_policy_template.json `
+  -WhatIf
+```
+
+## Deploy
+
+Connect with the required Microsoft Graph permissions, then run without `-WhatIf`:
+
+```powershell
+Connect-MgGraph -Scopes `
+  "DeviceManagementConfiguration.ReadWrite.All",`
+  "DeviceManagementManagedDevices.Read.All",`
+  "Directory.Read.All"
+
+.\scripts\compliance\apply_intune_policy.ps1 `
+  -Path .\config\intune_policy_template.json
+```
+
+## Template Locations
+
+- `config/intune_policy_template.json`: canonical repo-root template used by quickstart examples.
+- `scripts/compliance/intune_policy_template.json`: same schema colocated with compliance scripts for script-folder workflows.
+
+Keep both files aligned if you intentionally maintain both examples.
+
+## Supported Fields
+
+Required `complianceSettings` fields:
+
+- `requireBitLocker`
+- `firewallEnabled`
+- `passwordRequired`
+- `passwordMinimumLength`
+- `passwordExpirationDays`
+- `passwordPreviousPasswordBlockCount`
+- `osMinimumVersion`
+- `jailbreakDetectionEnabled`
+- `secureBootEnabled`
+- `codeIntegrityEnabled`
+- `deviceThreatProtectionRequiredSecurityLevel`
+- `antivirusRequired`
+
+Optional sections such as `scope`, `deviceHealthAttestation`, `conditionalAccessIntegration`, `reporting`, and `metadata` are useful for documentation and future workflow expansion, but are not all mapped into the current Graph payload.

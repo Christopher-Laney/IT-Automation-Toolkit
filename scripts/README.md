@@ -20,7 +20,7 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 | **Compliance** | intune_device_compliance_audit.ps1 | Compliance, OS, stale device reporting. | Weekly / Monthly |
 |  | intune_policy_template.json | Baseline compliance JSON. | Config template |
 |  | conditional_access_baseline.json | Baseline CA policy JSON. | Config template |
-|  | apply_intune_policy.ps1 | Apply Intune policy from template. | On-demand / Change mgmt |
+|  | apply_intune_policy.ps1 | Validate and apply Intune policy from template. | On-demand / Change mgmt |
 |  | set_conditional_access_policy.ps1 | Deploy Conditional Access rules. | On-demand / Security rollout |
 | **Reporting** | inventory_report.ps1 | Installed software export. | Monthly |
 |  | m365_license_audit.ps1 | License usage + missing allocation. | Weekly / Monthly |
