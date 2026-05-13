@@ -1,0 +1,53 @@
+# Quickstart
+
+This guide helps you safely try the toolkit without changing production resources.
+
+## 1. Clone And Open The Repo
+
+```powershell
+git clone https://github.com/Christopher-Laney/IT-Automation-Toolkit.git
+cd IT-Automation-Toolkit
+```
+
+## 2. Validate Script Syntax
+
+```powershell
+Get-ChildItem .\scripts -Recurse -Filter *.ps1 | ForEach-Object {
+  $errors = $null
+  [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$null, [ref]$errors) | Out-Null
+  $errors | ForEach-Object { "{0}:{1}: {2}" -f $_.Extent.File, $_.Extent.StartLineNumber, $_.Message }
+}
+```
+
+No output means no parser errors were found.
+
+## 3. Run A Safe Onboarding Preview
+
+```powershell
+.\scripts\identity\onboarding.ps1 -UserList .\config\new_users.csv -WhatIf
+```
+
+Review the proposed changes before running without `-WhatIf`.
+
+## 4. Prepare Optional Server Checks
+
+Copy the server list example and replace the sample hostnames:
+
+```powershell
+Copy-Item .\config\servers.txt.example .\config\servers.txt
+```
+
+Then run operational checks only after the server list is accurate:
+
+```powershell
+.\scripts\automation\invoke_it_baseline_checks.ps1 -RunOps
+```
+
+## 5. Generate Local Reports
+
+```powershell
+.\scripts\reporting\inventory_report.ps1 -ExportPath .\reports\inventory.csv
+.\scripts\reporting\generate_it_audit_dashboard.ps1 -OutputPath .\reports\it_audit_dashboard.html
+```
+
+Generated reports are ignored by git by default.
