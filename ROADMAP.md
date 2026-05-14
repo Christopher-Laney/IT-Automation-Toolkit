@@ -18,7 +18,7 @@
 
 - Add a sanitized Power BI `.pbit` template based on the sample CSV model.
 - Add report normalization so dashboard generation can consume consistent CSV schemas.
-- Add scheduled run examples for Task Scheduler, Azure Automation, and GitHub Actions.
+- Add Azure DevOps pipeline examples for validation and reporting workflows.
 - Add platform-specific Intune payload mappings for additional compliance settings.
 - Add generated screenshot refresh guidance for dashboard sample data.
 

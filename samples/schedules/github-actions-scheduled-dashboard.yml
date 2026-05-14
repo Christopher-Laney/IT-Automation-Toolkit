@@ -1,0 +1,31 @@
+# Copy this file to .github/workflows/scheduled-dashboard.yml to enable it.
+# It uses sanitized sample report data by default so it is safe for public repos.
+
+name: Scheduled Sample Dashboard
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 13 * * 1'
+
+jobs:
+  sample-dashboard:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Generate sample dashboard
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path reports -Force | Out-Null
+          ./scripts/reporting/generate_it_audit_dashboard.ps1 `
+            -ConfigPath ./config/dashboard_reports.sample.json `
+            -OutputPath ./reports/sample_it_audit_dashboard.html
+
+      - name: Upload dashboard artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sample-it-audit-dashboard
+          path: reports/sample_it_audit_dashboard.html

@@ -55,8 +55,8 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 
 ## 🏗 Integration Ideas
 
-- Add these to a **server automation schedule** via Task Scheduler / Azure Automation / Runbooks  
-- Build pipelines through **GitHub Actions** or **Azure DevOps**  
+- Add these to a **server automation schedule** via Task Scheduler / Azure Automation / Runbooks. See `docs/scheduling.md` for starter examples.
+- Build pipelines through **GitHub Actions** or **Azure DevOps**.
 - Centralize notifications using **Teams Webhooks** (included)  
 - Combine multiple scripts into **IT monthly compliance rollups**  
 - Use onboarding/offboarding scripts to **standardize HR → IT workflows**
