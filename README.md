@@ -73,6 +73,7 @@ The project emphasizes **automation, security, and scalability**, showing how a 
 
 ```powershell
 # Run onboarding workflow
+.\scripts\identity\onboarding.ps1 -UserList ".\config\new_users.csv" -ValidateOnly
 .\scripts\identity\onboarding.ps1 -UserList ".\config\new_users.csv" -WhatIf
 
 # Generate inventory report
