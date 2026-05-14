@@ -1,0 +1,41 @@
+Inactive User Count =
+COUNTROWS ( InactiveUsers )
+
+Inactive Users Over 45 Days =
+CALCULATE (
+    COUNTROWS ( InactiveUsers ),
+    InactiveUsers[DaysInactive] >= 45
+)
+
+Unapproved Local Admin Findings =
+CALCULATE (
+    COUNTROWS ( LocalAdmins ),
+    LocalAdmins[Approved] = FALSE ()
+)
+
+Noncompliant Devices =
+CALCULATE (
+    COUNTROWS ( IntuneCompliance ),
+    IntuneCompliance[ComplianceState] <> "Compliant"
+)
+
+License Utilization % =
+DIVIDE (
+    SUM ( M365LicenseAudit[Assigned] ),
+    SUM ( M365LicenseAudit[Assigned] ) + SUM ( M365LicenseAudit[Available] )
+)
+
+Available Licenses =
+SUM ( M365LicenseAudit[Available] )
+
+Certificates Expiring In 30 Days =
+CALCULATE (
+    COUNTROWS ( SslExpiry ),
+    SslExpiry[DaysUntilExp] <= 30
+)
+
+Systems Needing Attention =
+CALCULATE (
+    COUNTROWS ( SystemHealth ),
+    SystemHealth[Status] <> "Healthy"
+)

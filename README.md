@@ -91,6 +91,7 @@ For Intune policy validation and deployment, see [docs/intune_policy_templates.m
 
 For dashboard generation and Power BI source guidance, see [docs/dashboard_guidance.md](docs/dashboard_guidance.md).
 The repository also includes sanitized sample CSVs under `samples/reports` for a no-tenant dashboard demo.
+Power BI starter source notes, Power Query snippets, and DAX measures live under `dashboards/powerbi`.
 
 ---
 
