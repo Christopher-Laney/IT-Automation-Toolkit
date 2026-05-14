@@ -53,6 +53,21 @@ Describe 'Backup and restore automation' {
         Test-Path (Join-Path $restorePath 'scratch.tmp') | Should -BeFalse
     }
 
+    It 'keeps the sample backup manifest parseable and documented' {
+        $sampleManifestPath = Join-Path $script:RepoRoot 'samples/backups/backup-20260514-000000-sample.json'
+
+        Test-Path $sampleManifestPath | Should -BeTrue
+        $manifest = Get-Content -Raw -Path $sampleManifestPath | ConvertFrom-Json
+
+        $manifest.archive | Should -Be 'backup-20260514-000000-sample.zip'
+        $manifest.encryptedFile | Should -Be 'backup-20260514-000000-sample.enc'
+        $manifest.encryption | Should -Match 'AES-256-CBC'
+        $manifest.excludedDirs | Should -Contain 'cache*'
+        $manifest.excludedExtensions | Should -Contain '.tmp'
+        $manifest.itemsBackedUp | Should -BeGreaterThan 0
+        $manifest.version | Should -Be '1.2'
+    }
+
     It 'stops restore when the manifest hash does not match the backup' {
         & $script:BackupScript `
             -SourcePath $script:SourcePath `
