@@ -1,4 +1,5 @@
 {
+  "$schema": "../../config/intune_policy_template.schema.json",
   "policyName": "Baseline Compliance Policy",
   "description": "Default compliance policy enforcing encryption, password, and security baselines for corporate devices.",
   "platforms": [

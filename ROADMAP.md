@@ -19,7 +19,7 @@
 - Add Power BI template documentation and sample dashboard source guidance.
 - Add report normalization so dashboard generation can consume consistent CSV schemas.
 - Add scheduled run examples for Task Scheduler, Azure Automation, and GitHub Actions.
-- Add optional JSON schema checks for Intune policy templates.
+- Add platform-specific Intune payload mappings for additional compliance settings.
 - Add generated screenshot refresh guidance for dashboard sample data.
 
 ## Notifications

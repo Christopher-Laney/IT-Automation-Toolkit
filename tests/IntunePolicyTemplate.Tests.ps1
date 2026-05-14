@@ -17,6 +17,15 @@ Describe 'Intune policy template validation' {
         ($output | Out-String) | Should -Match 'Template validation passed'
     }
 
+    It 'keeps the root template schema reference resolvable' {
+        $templatePath = Join-Path $script:RepoRoot 'config/intune_policy_template.json'
+        $template = Get-Content -Raw -Path $templatePath | ConvertFrom-Json
+        $schemaPath = Join-Path (Split-Path -Parent $templatePath) $template.'$schema'
+
+        Test-Path $schemaPath | Should -BeTrue
+        { Get-Content -Raw -Path $schemaPath | ConvertFrom-Json } | Should -Not -Throw
+    }
+
     It 'validates the compliance script template without connecting to Graph' {
         $templatePath = Join-Path $script:RepoRoot 'scripts/compliance/intune_policy_template.json'
 
@@ -28,6 +37,14 @@ Describe 'Intune policy template validation' {
         }
 
         ($output | Out-String) | Should -Match 'Template validation passed'
+    }
+
+    It 'keeps the compliance script template schema reference resolvable' {
+        $templatePath = Join-Path $script:RepoRoot 'scripts/compliance/intune_policy_template.json'
+        $template = Get-Content -Raw -Path $templatePath | ConvertFrom-Json
+        $schemaPath = Join-Path (Split-Path -Parent $templatePath) $template.'$schema'
+
+        Test-Path $schemaPath | Should -BeTrue
     }
 
     It 'rejects unsupported platforms before connecting to Graph' {

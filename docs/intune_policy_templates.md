@@ -19,6 +19,12 @@ Validation checks:
 - Required compliance settings used by the deployment payload.
 - Required remediation actions `1` and `2`, including `gracePeriodHours`.
 
+## Editor Schema Support
+
+The canonical template includes a `$schema` reference to `config/intune_policy_template.schema.json`. Editors such as VS Code can use this schema for autocomplete, platform enum validation, and early warnings while you customize policy settings.
+
+If you copy the template to another folder, either keep the schema reference pointed at the repo copy or update `$schema` to a reachable path.
+
 ## Deploy With Preview
 
 Use `-WhatIf` after validation to preview policy creation or updates:
@@ -68,3 +74,5 @@ Required `complianceSettings` fields:
 - `antivirusRequired`
 
 Optional sections such as `scope`, `deviceHealthAttestation`, `conditionalAccessIntegration`, `reporting`, and `metadata` are useful for documentation and future workflow expansion, but are not all mapped into the current Graph payload.
+
+The JSON Schema intentionally allows additional compliance settings so new Intune payload fields can be documented before the deployment script maps them.
