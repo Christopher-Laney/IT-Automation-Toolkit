@@ -23,6 +23,14 @@ No output means no parser errors were found.
 
 ## 3. Run A Safe Onboarding Preview
 
+Validate the CSV before connecting to Microsoft Graph:
+
+```powershell
+.\scripts\identity\onboarding.ps1 -UserList .\config\new_users.csv -ValidateOnly
+```
+
+Then preview tenant changes with `-WhatIf`:
+
 ```powershell
 .\scripts\identity\onboarding.ps1 -UserList .\config\new_users.csv -WhatIf
 ```

@@ -33,6 +33,9 @@
 .PARAMETER IncludeTemporaryPasswordInReport
   If set, includes generated temporary passwords in the report CSV. Disabled by default to avoid writing secrets to plain text output.
 
+.PARAMETER ValidateOnly
+  Validate CSV headers and row values, then exit before connecting to Microsoft Graph.
+
 .PARAMETER MfaGroup
   Display name or ID of a group that enforces MFA via Conditional Access.
 
@@ -46,6 +49,9 @@
   Install-Module Microsoft.Graph -Scope CurrentUser
   Connect-MgGraph -Scopes "User.ReadWrite.All","Directory.ReadWrite.All","Group.ReadWrite.All","Directory.AccessAsUser.All","AuditLog.Read.All","Organization.Read.All"
   (For very strict tenants, add "Directory.Read.All" as needed.)
+
+.EXAMPLE
+  .\onboarding.ps1 -UserList .\config\new_users.csv -ValidateOnly
 
 .EXAMPLE
   .\onboarding.ps1 -UserList .\config\new_users.csv -SetTempPassword `
@@ -63,6 +69,7 @@ param(
   [int]$DefaultPasswordLength = 16,
   [switch]$SetTempPassword,
   [switch]$IncludeTemporaryPasswordInReport,
+  [switch]$ValidateOnly,
   [string]$MfaGroup,
   [string]$IntuneEnrollmentGroup,
   [string]$ReportPath
@@ -271,6 +278,11 @@ try {
     Test-UserRow -Row $row -RowNumber $validationRowNumber -DefaultUsageLocation $DefaultUsageLocation
   }
 
+  if ($ValidateOnly) {
+    Write-Host "CSV validation passed: $(@($rows).Count) user row(s)."
+    return
+  }
+
   Ensure-Graph
 
   $skuMap = Get-SkuMap
@@ -357,5 +369,5 @@ try {
 }
 catch {
   Write-Error $_.Exception.Message
-  exit 1
+  throw
 }

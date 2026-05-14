@@ -1,2 +1,3 @@
-DisplayName,UserPrincipalName,UsageLocation,LicenseSku,Groups
-Jane Doe,jane.doe@contoso.com,US,ENTERPRISEPACK,All-Employees
+DisplayName,UserPrincipalName,UsageLocation,LicenseSku,Groups,Department,ManagerUserPrincipalName,StartDate
+Jane Doe,jane.doe@contoso.com,US,ENTERPRISEPACK,All-Employees,Finance,manager@contoso.com,2026-06-01
+John Smith,john.smith@contoso.com,US,ENTERPRISEPACK;POWER_BI_PRO,All-Employees;IT,IT,manager@contoso.com,2026-06-03
