@@ -84,6 +84,16 @@ New-Item -ItemType Directory -Path .\reports -Force | Out-Null
 
 Expected result: `reports/sample_it_audit_dashboard.html` is created and includes sample identity, device, license, certificate, and system-health sections.
 
+You can run the same sample dashboard through the baseline orchestrator:
+
+```powershell
+.\scripts\automation\invoke_it_baseline_checks.ps1 `
+  -UseSampleData `
+  -DashboardOutputPath .\reports\sample_it_audit_dashboard.html
+```
+
+Expected result: the baseline summary reports that a sample IT audit dashboard was generated from sanitized reports.
+
 ## 5. Preview Backup Safety
 
 Run a backup preview. Replace paths with local demo folders if needed:
