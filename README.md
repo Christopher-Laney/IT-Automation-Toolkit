@@ -98,6 +98,12 @@ Power BI starter source notes, Power Query snippets, and DAX measures live under
 
 For scheduled execution examples across Task Scheduler, Azure Automation, and GitHub Actions, see [docs/scheduling.md](docs/scheduling.md).
 
+To exercise the master baseline runner without tenant credentials or server access, use:
+
+```powershell
+.\scripts\automation\invoke_it_baseline_checks.ps1 -UseSampleData -DashboardOutputPath .\reports\sample_it_audit_dashboard.html
+```
+
 ---
 
 ## ✅ Validation

@@ -40,6 +40,9 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 ## 🔥 Usage Examples
 
 ```powershell
+# Run a no-tenant sample baseline dashboard
+.\automation\invoke_it_baseline_checks.ps1 -UseSampleData -DashboardOutputPath ..\reports\sample_it_audit_dashboard.html
+
 # Run a weekly security baseline
 .\automation\invoke_it_baseline_checks.ps1 -RunCompliance -RunOps
 

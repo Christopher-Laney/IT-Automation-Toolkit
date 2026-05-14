@@ -15,20 +15,35 @@
 .PARAMETER TeamsWebhook
   Optional Teams webhook URL to send a summary notification.
 
+.PARAMETER UseSampleData
+  Generate the baseline dashboard from sanitized sample CSVs without running live compliance or operations checks.
+
+.PARAMETER DashboardOutputPath
+  HTML dashboard file to generate.
+
 .EXAMPLE
   .\invoke_it_baseline_checks.ps1 -RunCompliance -RunOps -TeamsWebhook "https://outlook.office.com/webhook/..."
+
+.EXAMPLE
+  .\invoke_it_baseline_checks.ps1 -UseSampleData -DashboardOutputPath ".\reports\sample_it_audit_dashboard.html"
 #>
 
 [CmdletBinding()]
 param(
     [switch]$RunCompliance,
     [switch]$RunOps,
-    [string]$TeamsWebhook
+    [string]$TeamsWebhook,
+    [switch]$UseSampleData,
+    [string]$DashboardOutputPath = ".\reports\it_audit_dashboard.html"
 )
 
 begin {
     $ErrorActionPreference = 'Stop'
     $results = @()
+
+    if ($UseSampleData -and ($RunCompliance -or $RunOps)) {
+        throw "UseSampleData cannot be combined with RunCompliance or RunOps. Run sample data separately from live checks."
+    }
 }
 
 process {
@@ -40,6 +55,7 @@ process {
     $notificationsPath = Join-Path $scriptsRoot 'notifications'
     $configRoot = Join-Path (Split-Path -Parent $scriptsRoot) 'config'
     $serverList = Join-Path $configRoot 'servers.txt'
+    $dashboardScript = Join-Path $reportingPath 'generate_it_audit_dashboard.ps1'
 
     if ($RunCompliance) {
         Write-Host "[COMPLIANCE] Running inactive_user_report..." -ForegroundColor Cyan
@@ -74,8 +90,14 @@ process {
     }
 
     # Generate dashboard
-    & (Join-Path $reportingPath 'generate_it_audit_dashboard.ps1') -OutputPath ".\reports\it_audit_dashboard.html"
-    $results += "IT audit dashboard generated."
+    if ($UseSampleData) {
+        $sampleDashboardConfig = Join-Path $configRoot 'dashboard_reports.sample.json'
+        & $dashboardScript -ConfigPath $sampleDashboardConfig -OutputPath $DashboardOutputPath
+        $results += "Sample IT audit dashboard generated from sanitized reports."
+    } else {
+        & $dashboardScript -OutputPath $DashboardOutputPath
+        $results += "IT audit dashboard generated."
+    }
 }
 
 end {

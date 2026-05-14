@@ -69,6 +69,12 @@ To preview the dashboard with sanitized sample data:
 .\scripts\reporting\generate_it_audit_dashboard.ps1 -ConfigPath .\config\dashboard_reports.sample.json -OutputPath .\reports\sample_it_audit_dashboard.html
 ```
 
+You can also exercise the baseline orchestrator without tenant credentials or server access:
+
+```powershell
+.\scripts\automation\invoke_it_baseline_checks.ps1 -UseSampleData -DashboardOutputPath .\reports\sample_it_audit_dashboard.html
+```
+
 ## 6. Validate An Intune Policy Template
 
 Validate the template before connecting to Microsoft Graph:
