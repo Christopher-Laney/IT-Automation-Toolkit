@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Christopher-Laney/IT-Automation-Toolkit/config/intune_policy_template.schema.json",
+  "title": "IT Automation Toolkit Intune Compliance Policy Template",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "policyName",
+    "description",
+    "platforms",
+    "complianceSettings",
+    "remediationActions"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "policyName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "platforms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "Windows10",
+          "Windows11",
+          "macOS",
+          "iOS",
+          "Android"
+        ]
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "includeGroups": {
+          "$ref": "#/$defs/stringArray"
+        },
+        "excludeGroups": {
+          "$ref": "#/$defs/stringArray"
+        }
+      }
+    },
+    "complianceSettings": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "requireBitLocker",
+        "firewallEnabled",
+        "passwordRequired",
+        "passwordMinimumLength",
+        "passwordExpirationDays",
+        "passwordPreviousPasswordBlockCount",
+        "osMinimumVersion",
+        "jailbreakDetectionEnabled",
+        "secureBootEnabled",
+        "codeIntegrityEnabled",
+        "deviceThreatProtectionRequiredSecurityLevel",
+        "antivirusRequired"
+      ],
+      "properties": {
+        "requireBitLocker": {
+          "type": "boolean"
+        },
+        "firewallEnabled": {
+          "type": "boolean"
+        },
+        "passwordRequired": {
+          "type": "boolean"
+        },
+        "passwordMinimumLength": {
+          "type": "integer",
+          "minimum": 4
+        },
+        "passwordExpirationDays": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "passwordPreviousPasswordBlockCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "osMinimumVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "osMaximumVersion": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "jailbreakDetectionEnabled": {
+          "type": "boolean"
+        },
+        "secureBootEnabled": {
+          "type": "boolean"
+        },
+        "codeIntegrityEnabled": {
+          "type": "boolean"
+        },
+        "deviceThreatProtectionRequiredSecurityLevel": {
+          "type": "string",
+          "enum": [
+            "unavailable",
+            "secured",
+            "low",
+            "medium",
+            "high",
+            "notSet"
+          ]
+        },
+        "antivirusRequired": {
+          "type": "boolean"
+        },
+        "automaticUpdatesEnabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "deviceHealthAttestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "requireTPM": {
+          "type": "boolean"
+        },
+        "requireSecureBoot": {
+          "type": "boolean"
+        },
+        "requireCodeIntegrity": {
+          "type": "boolean"
+        }
+      }
+    },
+    "conditionalAccessIntegration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "markNonCompliantAfterDays": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "notifyUserOnNonCompliance": {
+          "type": "boolean"
+        },
+        "emailNotificationRecipients": {
+          "$ref": "#/$defs/stringArray"
+        }
+      }
+    },
+    "remediationActions": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/remediationAction"
+      },
+      "required": [
+        "1",
+        "2"
+      ],
+      "properties": {
+        "1": {
+          "$ref": "#/$defs/remediationAction"
+        },
+        "2": {
+          "$ref": "#/$defs/remediationAction"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "generateComplianceReports": {
+          "type": "boolean"
+        },
+        "exportToLogAnalytics": {
+          "type": "boolean"
+        },
+        "reportFrequency": {
+          "type": "string",
+          "enum": [
+            "hourly",
+            "daily",
+            "weekly",
+            "monthly"
+          ]
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "createdBy": {
+          "type": "string"
+        },
+        "lastModified": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "string"
+        },
+        "policyTemplate": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "stringArray": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "remediationAction": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "gracePeriodHours"
+      ],
+      "properties": {
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gracePeriodHours": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}
