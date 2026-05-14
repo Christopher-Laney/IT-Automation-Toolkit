@@ -2,6 +2,8 @@
 
 This guide helps you safely try the toolkit without changing production resources.
 
+For a shorter no-tenant showcase, see `docs/demo_guide.md`.
+
 ## 1. Clone And Open The Repo
 
 ```powershell

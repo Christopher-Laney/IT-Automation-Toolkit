@@ -158,4 +158,18 @@ Describe 'Backup and restore automation' {
         Get-ChildItem -Path $script:BackupPath -Filter 'backup-*-preview.zip' | Should -BeNullOrEmpty
         Get-ChildItem -Path $script:BackupPath -Filter 'backup-*-preview.json' | Should -BeNullOrEmpty
     }
+
+    It 'previews backup work to a new destination without retention warnings' {
+        $newBackupPath = Join-Path $script:CaseRoot 'new-backup-destination'
+
+        $output = & $script:BackupScript `
+            -SourcePath $script:SourcePath `
+            -DestinationPath $newBackupPath `
+            -Tag 'new-preview' `
+            -WhatIf 6>&1 3>&1 2>&1
+
+        ($output | Out-String) | Should -Match 'Backup preview complete'
+        ($output | Out-String) | Should -Not -Match 'Cannot find path'
+        Test-Path $newBackupPath | Should -BeFalse
+    }
 }

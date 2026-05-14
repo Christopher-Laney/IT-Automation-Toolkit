@@ -5,6 +5,7 @@
 - Add tests for Azure upload mocks and webhook notification handling.
 - Add sample data for baseline checks.
 - Add restore drills that compare generated backup manifests against restored file inventories.
+- Add a generated demo transcript or screenshots for the 15-minute walkthrough.
 
 ## Identity Automation
 
