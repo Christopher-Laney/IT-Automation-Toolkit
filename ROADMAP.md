@@ -2,10 +2,10 @@
 
 ## Reliability
 
-- Continue expanding Pester coverage into backup safety, report generation, and dry-run behavior.
 - Add PSScriptAnalyzer settings once project-specific style rules settle.
-- Add sample data for baseline checks and backup verification.
 - Add tests for Azure upload mocks and webhook notification handling.
+- Add sample data for baseline checks.
+- Add restore drills that compare generated backup manifests against restored file inventories.
 
 ## Identity Automation
 
@@ -16,7 +16,7 @@
 
 ## Compliance And Reporting
 
-- Add Power BI template documentation and sample dashboard source guidance.
+- Add a sanitized Power BI `.pbit` template based on the sample CSV model.
 - Add report normalization so dashboard generation can consume consistent CSV schemas.
 - Add scheduled run examples for Task Scheduler, Azure Automation, and GitHub Actions.
 - Add platform-specific Intune payload mappings for additional compliance settings.
