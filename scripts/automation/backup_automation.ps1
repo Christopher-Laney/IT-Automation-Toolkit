@@ -146,6 +146,8 @@ function New-Manifest {
 
 function Remove-OldBackups {
   param([string]$Folder,[int]$Days)
+  if (-not (Test-Path $Folder)) { return }
+
   $cutoff = (Get-Date).AddDays(-$Days)
   Get-ChildItem -LiteralPath $Folder -File |
     Where-Object { $_.LastWriteTime -lt $cutoff -and $_.Name -match '^backup-\d{8}-\d{6}.*\.(zip|enc|json)$' } |
