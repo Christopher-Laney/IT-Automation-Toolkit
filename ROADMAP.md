@@ -2,7 +2,6 @@
 
 ## Reliability
 
-- Add PSScriptAnalyzer settings once project-specific style rules settle.
 - Add tests for Azure upload mocks and webhook notification handling.
 - Add sample data for baseline checks.
 - Add restore drills that compare generated backup manifests against restored file inventories.

@@ -20,7 +20,7 @@ From the repository root:
 
 ```powershell
 Invoke-Pester -Path .\tests -CI
-Invoke-ScriptAnalyzer -Path .\scripts -Recurse -Severity Error
+Invoke-ScriptAnalyzer -Path .\scripts -Recurse -Settings .\PSScriptAnalyzerSettings.psd1 -Severity Error
 ```
 
 ## Run The No-Dependency Parser Check
@@ -76,4 +76,4 @@ Backup preview:
 The GitHub Actions workflow lives at `.github/workflows/powershell-validation.yml` and runs:
 
 - `Invoke-Pester -Path ./tests -CI`
-- `Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Severity Error`
+- `Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Settings ./PSScriptAnalyzerSettings.psd1 -Severity Error`
