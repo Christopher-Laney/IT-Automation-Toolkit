@@ -1,0 +1,53 @@
+{
+  "$schema": "../intune_policy_template.schema.json",
+  "policyName": "macOS Security Baseline",
+  "description": "Example macOS compliance policy focused on password controls, firewall, Gatekeeper, and system integrity protection.",
+  "platforms": [
+    "macOS"
+  ],
+  "scope": {
+    "includeGroups": [
+      "macOS-Corporate-Devices"
+    ],
+    "excludeGroups": [
+      "macOS-Lab-Devices"
+    ]
+  },
+  "complianceSettings": {
+    "requireBitLocker": false,
+    "firewallEnabled": true,
+    "passwordRequired": true,
+    "passwordMinimumLength": 12,
+    "passwordExpirationDays": 90,
+    "passwordPreviousPasswordBlockCount": 8,
+    "osMinimumVersion": "12.0",
+    "osMaximumVersion": null,
+    "jailbreakDetectionEnabled": false,
+    "secureBootEnabled": false,
+    "codeIntegrityEnabled": false,
+    "deviceThreatProtectionRequiredSecurityLevel": "low",
+    "antivirusRequired": false,
+    "automaticUpdatesEnabled": true
+  },
+  "deviceHealthAttestation": {
+    "requireTPM": false,
+    "requireSecureBoot": false,
+    "requireCodeIntegrity": false
+  },
+  "remediationActions": {
+    "1": {
+      "action": "NotifyUser",
+      "gracePeriodHours": 24
+    },
+    "2": {
+      "action": "BlockAccess",
+      "gracePeriodHours": 72
+    }
+  },
+  "metadata": {
+    "createdBy": "IT Automation Toolkit",
+    "lastModified": "2026-05-14T00:00:00Z",
+    "version": "1.0",
+    "policyTemplate": "macOS Example"
+  }
+}
