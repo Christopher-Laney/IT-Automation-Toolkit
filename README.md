@@ -100,12 +100,15 @@ Power BI starter source notes, Power Query snippets, and DAX measures live under
 
 This repository includes a GitHub Actions workflow that checks PowerShell syntax, runs Pester parser tests, and runs PSScriptAnalyzer for error-level findings.
 
-You can run the no-dependency parser check locally with:
+See [docs/testing.md](docs/testing.md) for local Pester setup, focused validation commands, and the no-dependency parser check.
+
+You can run the quick parser check locally with:
 
 ```powershell
-Get-ChildItem .\scripts -Recurse -Filter *.ps1 | ForEach-Object {
+Get-ChildItem .\scripts,.\tests -Recurse -Filter *.ps1 | ForEach-Object {
+  $tokens = $null
   $errors = $null
-  [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$null, [ref]$errors) | Out-Null
+  [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$errors) | Out-Null
   $errors | ForEach-Object { "{0}:{1}: {2}" -f $_.Extent.File, $_.Extent.StartLineNumber, $_.Message }
 }
 ```
