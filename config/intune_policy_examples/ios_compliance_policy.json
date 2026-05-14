@@ -1,0 +1,53 @@
+{
+  "$schema": "../intune_policy_template.schema.json",
+  "policyName": "iOS Security Baseline",
+  "description": "Example iOS compliance policy focused on passcode strength, minimum OS version, and jailbreak detection.",
+  "platforms": [
+    "iOS"
+  ],
+  "scope": {
+    "includeGroups": [
+      "iOS-Corporate-Devices"
+    ],
+    "excludeGroups": [
+      "iOS-Shared-Kiosks"
+    ]
+  },
+  "complianceSettings": {
+    "requireBitLocker": false,
+    "firewallEnabled": false,
+    "passwordRequired": true,
+    "passwordMinimumLength": 6,
+    "passwordExpirationDays": 0,
+    "passwordPreviousPasswordBlockCount": 5,
+    "osMinimumVersion": "15.0",
+    "osMaximumVersion": null,
+    "jailbreakDetectionEnabled": true,
+    "secureBootEnabled": false,
+    "codeIntegrityEnabled": false,
+    "deviceThreatProtectionRequiredSecurityLevel": "low",
+    "antivirusRequired": false,
+    "automaticUpdatesEnabled": true
+  },
+  "deviceHealthAttestation": {
+    "requireTPM": false,
+    "requireSecureBoot": false,
+    "requireCodeIntegrity": false
+  },
+  "remediationActions": {
+    "1": {
+      "action": "NotifyUser",
+      "gracePeriodHours": 12
+    },
+    "2": {
+      "action": "BlockAccess",
+      "gracePeriodHours": 48
+    }
+  },
+  "metadata": {
+    "createdBy": "IT Automation Toolkit",
+    "lastModified": "2026-05-14T00:00:00Z",
+    "version": "1.0",
+    "policyTemplate": "iOS Example"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "$schema": "../intune_policy_template.schema.json",
+  "policyName": "Windows Security Baseline",
+  "description": "Example Windows compliance policy focused on encryption, firewall, Defender, Secure Boot, and password controls.",
+  "platforms": [
+    "Windows10",
+    "Windows11"
+  ],
+  "scope": {
+    "includeGroups": [
+      "Windows-Corporate-Devices"
+    ],
+    "excludeGroups": [
+      "Windows-Kiosk-Devices"
+    ]
+  },
+  "complianceSettings": {
+    "requireBitLocker": true,
+    "firewallEnabled": true,
+    "passwordRequired": true,
+    "passwordMinimumLength": 12,
+    "passwordExpirationDays": 90,
+    "passwordPreviousPasswordBlockCount": 10,
+    "osMinimumVersion": "10.0.19045",
+    "osMaximumVersion": null,
+    "jailbreakDetectionEnabled": false,
+    "secureBootEnabled": true,
+    "codeIntegrityEnabled": true,
+    "deviceThreatProtectionRequiredSecurityLevel": "medium",
+    "antivirusRequired": true,
+    "automaticUpdatesEnabled": true
+  },
+  "deviceHealthAttestation": {
+    "requireTPM": true,
+    "requireSecureBoot": true,
+    "requireCodeIntegrity": true
+  },
+  "remediationActions": {
+    "1": {
+      "action": "NotifyUser",
+      "gracePeriodHours": 24
+    },
+    "2": {
+      "action": "BlockAccess",
+      "gracePeriodHours": 72
+    }
+  },
+  "metadata": {
+    "createdBy": "IT Automation Toolkit",
+    "lastModified": "2026-05-14T00:00:00Z",
+    "version": "1.0",
+    "policyTemplate": "Windows Example"
+  }
+}

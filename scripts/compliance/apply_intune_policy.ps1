@@ -53,7 +53,11 @@ function Test-RequiredProperty {
     [Parameter(Mandatory=$true)][string]$Context
   )
 
-  if (-not $InputObject.ContainsKey($Name) -or $null -eq $InputObject[$Name] -or $InputObject[$Name] -eq '') {
+  if (
+    -not $InputObject.ContainsKey($Name) -or
+    $null -eq $InputObject[$Name] -or
+    ($InputObject[$Name] -is [string] -and [string]::IsNullOrWhiteSpace($InputObject[$Name]))
+  ) {
     throw "$Context is missing required property '$Name'."
   }
 }

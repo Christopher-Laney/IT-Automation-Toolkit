@@ -49,12 +49,38 @@ Connect-MgGraph -Scopes `
   -Path .\config\intune_policy_template.json
 ```
 
+Required permissions:
+
+- `DeviceManagementConfiguration.ReadWrite.All`: create or update compliance policies.
+- `DeviceManagementManagedDevices.Read.All`: inspect managed device context used by Intune policy workflows.
+- `Directory.Read.All`: resolve directory and group context for policy targeting.
+
 ## Template Locations
 
 - `config/intune_policy_template.json`: canonical repo-root template used by quickstart examples.
 - `scripts/compliance/intune_policy_template.json`: same schema colocated with compliance scripts for script-folder workflows.
+- `config/intune_policy_examples/*.json`: platform-focused examples for safer customization.
 
 Keep both files aligned if you intentionally maintain both examples.
+
+## Platform Examples
+
+Use the example templates as starting points when you want to tune one device family at a time:
+
+| Example | Platforms | Focus |
+|---|---|---|
+| `config/intune_policy_examples/windows_compliance_policy.json` | `Windows10`, `Windows11` | BitLocker, firewall, Defender, Secure Boot, code integrity, password controls |
+| `config/intune_policy_examples/macos_compliance_policy.json` | `macOS` | Password controls, firewall, Gatekeeper, system integrity protection |
+| `config/intune_policy_examples/ios_compliance_policy.json` | `iOS` | Passcode strength, minimum OS version, jailbreak detection |
+| `config/intune_policy_examples/android_compliance_policy.json` | `Android` | Passcode strength, storage encryption, minimum OS version, jailbreak/root detection |
+
+Validate any example before deployment:
+
+```powershell
+.\scripts\compliance\apply_intune_policy.ps1 `
+  -Path .\config\intune_policy_examples\windows_compliance_policy.json `
+  -ValidateOnly
+```
 
 ## Supported Fields
 
