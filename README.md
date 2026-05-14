@@ -94,6 +94,8 @@ For dashboard generation and Power BI source guidance, see [docs/dashboard_guida
 The repository also includes sanitized sample CSVs under `samples/reports` for a no-tenant dashboard demo.
 Power BI starter source notes, Power Query snippets, and DAX measures live under `dashboards/powerbi`.
 
+For scheduled execution examples across Task Scheduler, Azure Automation, and GitHub Actions, see [docs/scheduling.md](docs/scheduling.md).
+
 ---
 
 ## ✅ Validation
