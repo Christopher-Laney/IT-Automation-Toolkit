@@ -73,7 +73,10 @@ Backup preview:
 
 ## CI Reference
 
-The GitHub Actions workflow lives at `.github/workflows/powershell-validation.yml` and runs:
+The GitHub Actions workflow lives at `.github/workflows/powershell-validation.yml`.
+It runs on the `windows-2025-vs2026` hosted image so validation matches the Windows runner image GitHub is moving `windows-latest` toward in June 2026.
+
+The workflow uses read-only repository permissions and runs:
 
 - `Invoke-Pester -Path ./tests -CI`
 - `Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Settings ./PSScriptAnalyzerSettings.psd1 -Severity Error`
