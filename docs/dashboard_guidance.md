@@ -10,6 +10,7 @@ Recommended tracked assets:
 
 - `config/dashboard_reports.json`: dashboard report map.
 - `config/dashboard_reports.sample.json`: sample-data dashboard report map.
+- `dashboards/powerbi`: Power BI source guidance, starter queries, and measures.
 - `docs/dashboard_guidance.md`: dashboard instructions and expected schemas.
 - `dashboards/sample_output_screenshot.png`: representative screenshot.
 - `samples/reports/*.csv`: sanitized sample report data for demos.
@@ -86,6 +87,8 @@ For demo data, use the matching files under `samples/reports`.
 ## Power BI Guidance
 
 If you add Power BI assets, prefer a sanitized `.pbit` template or documentation over a production `.pbix`.
+
+Use `dashboards/powerbi/README.md` as the starter source guide. It maps toolkit CSV outputs to Power BI tables, recommends report pages, and includes starter Power Query and DAX files.
 
 Before committing Power BI files:
 
