@@ -28,4 +28,4 @@ jobs:
 
       - name: Run script analyzer
         shell: pwsh
-        run: Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Severity Error
+        run: Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Settings ./PSScriptAnalyzerSettings.psd1 -Severity Error
