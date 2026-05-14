@@ -54,6 +54,8 @@ Run the encrypted backup:
 
 The encrypted file uses the repository's documented `AES256` header followed by a 16-byte IV and AES-256-CBC encrypted ZIP content. Keep the key in a vault or protected key location. Do not commit it.
 
+The current encrypted format does not embed an authentication tag in the `.enc` file. Always keep the manifest with the encrypted artifact and restore with `-ManifestPath` so `restore_backup.ps1` verifies `encryptedSha256` before decrypting and verifies `sha256` before extraction.
+
 ## Manifest Fields
 
 The manifest includes:
@@ -70,6 +72,8 @@ The manifest includes:
 - `excludedDirs` and `excludedExtensions`: exclusions used.
 - `itemsBackedUp`: selected file count.
 - `version`: manifest format version.
+
+See `samples/backups/backup-20260514-000000-sample.json` for a sanitized manifest example. The sample hashes are placeholders so the file is useful for documentation and tooling checks without implying a real backup artifact exists.
 
 ## Restore A Plain ZIP
 
