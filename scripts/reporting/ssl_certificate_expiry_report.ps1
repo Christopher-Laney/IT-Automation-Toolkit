@@ -57,18 +57,18 @@ begin {
 
 process {
     foreach ($t in $targets) {
-        $host = $t
+        $targetHost = $t
         if ($t -match "^https?://(.+?)(/|$)") {
-            $host = $Matches[1]
+            $targetHost = $Matches[1]
         }
 
-        Write-Verbose "Checking $($host):$Port ..."
+        Write-Verbose "Checking $($targetHost):$Port ..."
 
         try {
-            $tcpClient = New-Object System.Net.Sockets.TcpClient($host, $Port)
+            $tcpClient = New-Object System.Net.Sockets.TcpClient($targetHost, $Port)
             try {
                 $sslStream = New-Object System.Net.Security.SslStream($tcpClient.GetStream(), $false, ({ $true }))
-                $sslStream.AuthenticateAsClient($host)
+                $sslStream.AuthenticateAsClient($targetHost)
                 $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 $sslStream.RemoteCertificate
 
                 $expires = $cert.NotAfter
@@ -80,7 +80,7 @@ process {
 
                 $list.Add([pscustomobject]@{
                     Endpoint     = $t
-                    Host         = $host
+                    Host         = $targetHost
                     Port         = $Port
                     Subject      = $cert.Subject
                     Issuer       = $cert.Issuer
@@ -97,7 +97,7 @@ process {
         catch {
             $list.Add([pscustomobject]@{
                 Endpoint     = $t
-                Host         = $host
+                Host         = $targetHost
                 Port         = $Port
                 Subject      = ''
                 Issuer       = ''

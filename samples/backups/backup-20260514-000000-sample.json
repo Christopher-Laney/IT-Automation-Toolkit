@@ -17,5 +17,17 @@
     ".log"
   ],
   "itemsBackedUp": 42,
-  "version": "1.2"
+  "fileInventory": [
+    {
+      "relativePath": "Finance/quarterly.xlsx",
+      "bytes": 24576,
+      "sha256": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
+    },
+    {
+      "relativePath": "HR/onboarding.csv",
+      "bytes": 4096,
+      "sha256": "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
+    }
+  ],
+  "version": "1.3"
 }
