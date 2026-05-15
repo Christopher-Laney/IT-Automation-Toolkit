@@ -68,6 +68,9 @@ Each item must include:
 
 - `title`: section heading in the dashboard.
 - `path`: CSV path to import.
+- `columns`: expected CSV headers in the order they should appear in the dashboard.
+
+When `columns` are configured, the dashboard generator validates that every required header is present, renders columns in the configured order, and omits extra source columns. This keeps live reports and sample reports visually consistent while still catching schema drift early.
 
 ## Expected CSV Inputs
 

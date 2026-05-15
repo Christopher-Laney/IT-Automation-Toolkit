@@ -42,6 +42,19 @@ param(
 begin {
     $ErrorActionPreference = 'Stop'
 
+    function Get-CsvHeaders {
+        param([Parameter(Mandatory=$true)][string]$Path)
+
+        $parser = [Microsoft.VisualBasic.FileIO.TextFieldParser]::new((Resolve-Path -LiteralPath $Path).Path)
+        try {
+            $parser.TextFieldType = [Microsoft.VisualBasic.FileIO.FieldType]::Delimited
+            $parser.SetDelimiters(',')
+            return @($parser.ReadFields())
+        } finally {
+            $parser.Close()
+        }
+    }
+
     $dir = Split-Path $OutputPath
     if ($dir -and -not (Test-Path $dir)) {
         New-Item -ItemType Directory -Path $dir -Force | Out-Null
@@ -50,6 +63,7 @@ begin {
     $sectionsHtml = @()
     $summaryRows = @()
     $missingReports = @()
+    $reportDefinitions = @()
 
     if (-not $ConfigPath -and -not $PSBoundParameters.ContainsKey('Reports')) {
         $defaultConfig = ".\config\dashboard_reports.json"
@@ -59,19 +73,31 @@ begin {
     if ($ConfigPath) {
         if (-not (Test-Path $ConfigPath)) { throw "Dashboard config not found: $ConfigPath" }
         $config = Get-Content -Raw -Path $ConfigPath | ConvertFrom-Json
-        $Reports = @{}
         foreach ($report in $config.reports) {
             if (-not $report.title -or -not $report.path) {
                 throw "Each dashboard report config item must include title and path."
             }
-            $Reports[$report.title] = $report.path
+            $reportDefinitions += [pscustomobject]@{
+                Title   = $report.title
+                Path    = $report.path
+                Columns = @($report.columns)
+            }
+        }
+    } else {
+        foreach ($title in ($Reports.Keys | Sort-Object)) {
+            $reportDefinitions += [pscustomobject]@{
+                Title   = $title
+                Path    = $Reports[$title]
+                Columns = @()
+            }
         }
     }
 }
 
 process {
-    foreach ($key in ($Reports.Keys | Sort-Object)) {
-        $path = $Reports[$key]
+    foreach ($reportDefinition in $reportDefinitions) {
+        $key = $reportDefinition.Title
+        $path = $reportDefinition.Path
         if (-not (Test-Path $path)) {
             Write-Warning "Report not found for '$key': $path"
             $missingReports += [pscustomobject]@{
@@ -84,6 +110,18 @@ process {
         Write-Verbose "Loading $key from $path ..."
         $data = Import-Csv -Path $path
         $rowCount = @($data).Count
+        $requiredColumns = @($reportDefinition.Columns | Where-Object { $_ })
+
+        if ($requiredColumns.Count -gt 0) {
+            $availableColumns = @(Get-CsvHeaders -Path $path)
+
+            $missingColumns = @($requiredColumns | Where-Object { $_ -notin $availableColumns })
+            if ($missingColumns.Count -gt 0) {
+                throw "Report '$key' is missing required column(s): $($missingColumns -join ', ')."
+            }
+
+            $data = $data | Select-Object -Property $requiredColumns
+        }
 
         $summaryRows += [pscustomobject]@{
             Report = $key
