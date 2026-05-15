@@ -49,6 +49,9 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 # Generate dashboard after reports exist
 .\reporting\generate_it_audit_dashboard.ps1
 
+# Generate a sanitized transcript of the no-tenant demo walkthrough
+.\reporting\generate_demo_transcript.ps1 -OutputPath ..\docs\demo_transcript.md
+
 # Preview a Teams alert payload without sending it
 .\notifications\teams_webhook_alert.ps1 -WebhookUrl "https://example.invalid/webhook" -Title "Backup Warning" -Message "Preview only." -Severity Warning -WhatIf -PassThru
 
