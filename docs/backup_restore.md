@@ -71,6 +71,7 @@ The manifest includes:
 - `sourcePath`: resolved backup source path.
 - `excludedDirs` and `excludedExtensions`: exclusions used.
 - `itemsBackedUp`: selected file count.
+- `fileInventory`: relative path, byte size, and SHA256 for each backed-up file.
 - `version`: manifest format version.
 
 See `samples/backups/backup-20260514-000000-sample.json` for a sanitized manifest example. The sample hashes are placeholders so the file is useful for documentation and tooling checks without implying a real backup artifact exists.
@@ -95,6 +96,8 @@ Restore:
   -ManifestPath "E:\Backups\backup-20260513-010203.json" `
   -DestinationPath "D:\Restore"
 ```
+
+When the manifest includes `fileInventory`, restore also verifies that the restored tree has the same relative paths, byte sizes, and SHA256 hashes recorded at backup time. This catches missing files, unexpected files, and restored-content drift after extraction.
 
 ## Restore An Encrypted Backup
 

@@ -120,6 +120,22 @@ function Protect-FileWithAes {
   }
 }
 
+function New-FileInventory {
+  param(
+    [Parameter(Mandatory=$true)][System.IO.FileInfo[]]$Files,
+    [Parameter(Mandatory=$true)][string]$RootPath
+  )
+
+  foreach ($file in $Files) {
+    $relativePath = $file.FullName.Substring($RootPath.Length).TrimStart('\','/') -replace '\\', '/'
+    [ordered]@{
+      relativePath = $relativePath
+      bytes        = $file.Length
+      sha256       = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash
+    }
+  }
+}
+
 function New-Manifest {
   param([string]$ArchivePath,[string]$EncPath)
   $hash = Get-FileHash -Path $ArchivePath -Algorithm SHA256
@@ -139,7 +155,8 @@ function New-Manifest {
     excludedDirs      = $ExcludeDirs
     excludedExtensions= $ExcludeExtensions
     itemsBackedUp     = $script:BACKUPCOUNT
-    version           = "1.2"
+    fileInventory     = @($script:FILEINVENTORY)
+    version           = "1.3"
   }
   return ($obj | ConvertTo-Json -Depth 6)
 }
@@ -241,6 +258,7 @@ try {
   }
   $script:BACKUPCOUNT = ($allFiles | Measure-Object).Count
   if ($script:BACKUPCOUNT -eq 0) { throw "No files to back up after exclusions." }
+  $script:FILEINVENTORY = @(New-FileInventory -Files @($allFiles) -RootPath (Resolve-Path -LiteralPath $SourcePath).Path.TrimEnd('\','/'))
   Write-Log "Files selected: $script:BACKUPCOUNT" 'INFO'
 
   # Create archive

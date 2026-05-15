@@ -42,6 +42,9 @@ Describe 'Backup and restore automation' {
         $manifest.excludedDirs | Should -Contain 'cache*'
         $manifest.excludedExtensions | Should -Contain '.tmp'
         $manifest.sha256 | Should -Be (Get-FileHash -Path $zip.FullName -Algorithm SHA256).Hash
+        $manifest.fileInventory | Should -HaveCount 2
+        $manifest.fileInventory.relativePath | Should -Contain 'root.txt'
+        $manifest.fileInventory.relativePath | Should -Contain 'nested/data.csv'
 
         $restorePath = Join-Path $script:CaseRoot 'restore'
         & $script:RestoreScript -BackupPath $zip.FullName -ManifestPath $manifestPath -DestinationPath $restorePath
@@ -65,7 +68,9 @@ Describe 'Backup and restore automation' {
         $manifest.excludedDirs | Should -Contain 'cache*'
         $manifest.excludedExtensions | Should -Contain '.tmp'
         $manifest.itemsBackedUp | Should -BeGreaterThan 0
-        $manifest.version | Should -Be '1.2'
+        $manifest.fileInventory | Should -Not -BeNullOrEmpty
+        $manifest.fileInventory[0].relativePath | Should -Be 'Finance/quarterly.xlsx'
+        $manifest.version | Should -Be '1.3'
     }
 
     It 'stops restore when the manifest hash does not match the backup' {
@@ -86,6 +91,28 @@ Describe 'Backup and restore automation' {
                 -ManifestPath $manifestPath `
                 -DestinationPath (Join-Path $script:CaseRoot 'tampered-restore')
         } | Should -Throw -ExpectedMessage '*SHA256 mismatch*'
+    }
+
+    It 'stops restore when the restored inventory does not match the manifest' {
+        & $script:BackupScript `
+            -SourcePath $script:SourcePath `
+            -DestinationPath $script:BackupPath `
+            -Tag 'inventory'
+
+        $archives = @(Get-ChildItem -Path $script:BackupPath -Filter 'backup-*-inventory.zip')
+        $archives | Should -HaveCount 1
+        $zip = $archives[0]
+        $manifestPath = [System.IO.Path]::ChangeExtension($zip.FullName, '.json')
+        $manifest = Get-Content -Raw -Path $manifestPath | ConvertFrom-Json
+        $manifest.fileInventory[0].sha256 = ('0' * 64)
+        $manifest | ConvertTo-Json -Depth 8 | Set-Content -Path $manifestPath
+
+        {
+            & $script:RestoreScript `
+                -BackupPath $zip.FullName `
+                -ManifestPath $manifestPath `
+                -DestinationPath (Join-Path $script:CaseRoot 'inventory-restore')
+        } | Should -Throw -ExpectedMessage '*Restored inventory hash mismatch*'
     }
 
     It 'restores encrypted backups and removes the temporary decrypted ZIP' {

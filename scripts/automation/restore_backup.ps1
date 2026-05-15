@@ -108,6 +108,54 @@ function Assert-ManifestHash {
   }
 }
 
+function Get-RestoredInventory {
+  param([Parameter(Mandatory=$true)][string]$RootPath)
+
+  $resolvedRoot = (Resolve-Path -LiteralPath $RootPath).Path.TrimEnd('\','/')
+  Get-ChildItem -LiteralPath $resolvedRoot -Recurse -File |
+    ForEach-Object {
+      [pscustomobject]@{
+        relativePath = $_.FullName.Substring($resolvedRoot.Length).TrimStart('\','/') -replace '\\', '/'
+        bytes        = $_.Length
+        sha256       = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
+      }
+    }
+}
+
+function Assert-RestoredInventory {
+  param(
+    [Parameter(Mandatory=$true)][object[]]$ExpectedInventory,
+    [Parameter(Mandatory=$true)][string]$DestinationPath
+  )
+
+  $actualInventory = @(Get-RestoredInventory -RootPath $DestinationPath)
+  $expectedByPath = @{}
+  foreach ($item in $ExpectedInventory) { $expectedByPath[$item.relativePath] = $item }
+  $actualByPath = @{}
+  foreach ($item in $actualInventory) { $actualByPath[$item.relativePath] = $item }
+
+  $missing = @($expectedByPath.Keys | Where-Object { -not $actualByPath.ContainsKey($_) })
+  if ($missing.Count -gt 0) {
+    throw "Restored inventory is missing file(s): $($missing -join ', ')."
+  }
+
+  $unexpected = @($actualByPath.Keys | Where-Object { -not $expectedByPath.ContainsKey($_) })
+  if ($unexpected.Count -gt 0) {
+    throw "Restored inventory contains unexpected file(s): $($unexpected -join ', ')."
+  }
+
+  foreach ($relativePath in $expectedByPath.Keys) {
+    $expected = $expectedByPath[$relativePath]
+    $actual = $actualByPath[$relativePath]
+    if ($actual.bytes -ne $expected.bytes) {
+      throw "Restored inventory size mismatch for $relativePath. Expected $($expected.bytes), got $($actual.bytes)."
+    }
+    if ($actual.sha256 -ne $expected.sha256) {
+      throw "Restored inventory hash mismatch for $relativePath."
+    }
+  }
+}
+
 try {
   if (-not (Test-Path $BackupPath)) { throw "Backup not found: $BackupPath" }
 
@@ -141,6 +189,9 @@ try {
   if ($PSCmdlet.ShouldProcess($DestinationPath, "Restore backup contents")) {
     if (-not (Test-Path $DestinationPath)) { New-Item -ItemType Directory -Path $DestinationPath | Out-Null }
     Expand-Archive -LiteralPath $zipToRestore -DestinationPath $DestinationPath -Force
+    if ($manifest -and $manifest.fileInventory) {
+      Assert-RestoredInventory -ExpectedInventory @($manifest.fileInventory) -DestinationPath $DestinationPath
+    }
   }
 
   if ($decryptedZip -and -not $KeepDecryptedZip -and (Test-Path $decryptedZip)) {
