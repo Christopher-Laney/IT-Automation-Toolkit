@@ -231,6 +231,9 @@ function Upload-AzureBlob {
 # -------------------- main --------------------
 try {
   if (-not (Test-Path $SourcePath)) { throw "Source not found: $SourcePath" }
+  if (($AzureConnectionString -and -not $AzureContainer) -or ($AzureContainer -and -not $AzureConnectionString)) {
+    throw "AzureConnectionString and AzureContainer must be provided together."
+  }
   Ensure-Dir $DestinationPath
 
   # Log file default under destination /logs

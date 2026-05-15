@@ -124,3 +124,4 @@ Use a connection string from an environment variable or managed automation secre
 ```
 
 Do not put storage connection strings in scripts, config files, logs, or issue comments.
+Provide `-AzureConnectionString` and `-AzureContainer` together; the backup script treats either value on its own as a configuration error instead of silently skipping upload.
