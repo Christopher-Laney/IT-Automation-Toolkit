@@ -2,27 +2,33 @@
   "reports": [
     {
       "title": "Inactive Users",
-      "path": ".\\samples\\reports\\inactive_users.csv"
+      "path": ".\\samples\\reports\\inactive_users.csv",
+      "columns": ["UserPrincipalName", "DisplayName", "Department", "LastSignIn", "DaysInactive", "RecommendedAction"]
     },
     {
       "title": "Local Administrators",
-      "path": ".\\samples\\reports\\local_admins.csv"
+      "path": ".\\samples\\reports\\local_admins.csv",
+      "columns": ["ComputerName", "AdminAccount", "AccountType", "Approved", "Notes"]
     },
     {
       "title": "Intune Compliance",
-      "path": ".\\samples\\reports\\intune_compliance.csv"
+      "path": ".\\samples\\reports\\intune_compliance.csv",
+      "columns": ["DeviceName", "UserPrincipalName", "OS", "ComplianceState", "LastCheckIn", "Issue"]
     },
     {
       "title": "M365 License Audit",
-      "path": ".\\samples\\reports\\m365_license_audit.csv"
+      "path": ".\\samples\\reports\\m365_license_audit.csv",
+      "columns": ["SkuPartNumber", "Assigned", "Available", "ConsumedPercent", "Recommendation"]
     },
     {
       "title": "SSL Certificate Status",
-      "path": ".\\samples\\reports\\ssl_expiry.csv"
+      "path": ".\\samples\\reports\\ssl_expiry.csv",
+      "columns": ["Endpoint", "Host", "Port", "Subject", "Issuer", "NotAfter", "DaysUntilExp", "Status"]
     },
     {
       "title": "System Health",
-      "path": ".\\samples\\reports\\system_health.csv"
+      "path": ".\\samples\\reports\\system_health.csv",
+      "columns": ["ComputerName", "Status", "CpuPercent", "MemoryUsedPercent", "DiskSummary", "TimestampUTC"]
     }
   ]
 }

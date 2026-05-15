@@ -56,4 +56,79 @@ Describe 'IT audit dashboard generation' {
         $html | Should -Match 'Missing Report'
         $html | Should -Match ([regex]::Escape($missingPath))
     }
+
+    It 'normalizes configured report columns and rejects schema drift' {
+        $csvPath = Join-Path $TestDrive 'unordered_report.csv'
+        @(
+            [pscustomobject]@{
+                Status = 'Ready'
+                Name   = 'Casey Morgan'
+                Extra  = 'Ignore me'
+            }
+        ) | Export-Csv -Path $csvPath -NoTypeInformation
+
+        $configPath = Join-Path $TestDrive 'dashboard_config.json'
+        @{
+            reports = @(
+                @{
+                    title   = 'Normalized Report'
+                    path    = $csvPath
+                    columns = @('Name', 'Status')
+                }
+            )
+        } | ConvertTo-Json -Depth 5 | Set-Content -Path $configPath
+
+        $outputPath = Join-Path $TestDrive 'normalized_dashboard.html'
+
+        Push-Location $script:RepoRoot
+        try {
+            & $script:DashboardScript -ConfigPath $configPath -OutputPath $outputPath
+        } finally {
+            Pop-Location
+        }
+
+        $html = Get-Content -Raw -Path $outputPath
+        $html.IndexOf('<th>Name</th>') | Should -BeLessThan $html.IndexOf('<th>Status</th>')
+        $html | Should -Not -Match '<th>Extra</th>'
+
+        @{
+            reports = @(
+                @{
+                    title   = 'Broken Report'
+                    path    = $csvPath
+                    columns = @('Name', 'MissingColumn')
+                }
+            )
+        } | ConvertTo-Json -Depth 5 | Set-Content -Path $configPath
+
+        {
+            Push-Location $script:RepoRoot
+            try {
+                & $script:DashboardScript -ConfigPath $configPath -OutputPath $outputPath
+            } finally {
+                Pop-Location
+            }
+        } | Should -Throw "*Report 'Broken Report' is missing required column(s): MissingColumn*"
+
+        $emptyCsvPath = Join-Path $TestDrive 'empty_report.csv'
+        'Name,Status' | Set-Content -Path $emptyCsvPath
+        @{
+            reports = @(
+                @{
+                    title   = 'Empty Report'
+                    path    = $emptyCsvPath
+                    columns = @('Name', 'Status')
+                }
+            )
+        } | ConvertTo-Json -Depth 5 | Set-Content -Path $configPath
+
+        {
+            Push-Location $script:RepoRoot
+            try {
+                & $script:DashboardScript -ConfigPath $configPath -OutputPath $outputPath
+            } finally {
+                Pop-Location
+            }
+        } | Should -Not -Throw
+    }
 }
