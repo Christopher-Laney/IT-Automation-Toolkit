@@ -19,14 +19,25 @@
 .PARAMETER Severity
   Text severity level: Info, Warning, Critical.
 
+.PARAMETER PassThru
+  Return the generated payload object for logging, tests, or review workflows.
+
 .EXAMPLE
   .\teams_webhook_alert.ps1 -WebhookUrl "https://outlook.office.com/webhook/..." `
     -Title "Backup Warning" `
     -Message "Backup job SRV01 completed with warnings." `
     -Severity "Warning"
+
+.EXAMPLE
+  .\teams_webhook_alert.ps1 -WebhookUrl "https://outlook.office.com/webhook/..." `
+    -Title "Backup Warning" `
+    -Message "Backup job SRV01 completed with warnings." `
+    -Severity "Warning" `
+    -WhatIf `
+    -PassThru
 #>
 
-[CmdletBinding()]
+[CmdletBinding(SupportsShouldProcess=$true)]
 param(
     [Parameter(Mandatory=$true)]
     [string]$WebhookUrl,
@@ -38,7 +49,9 @@ param(
     [string]$Message,
 
     [ValidateSet('Info','Warning','Critical')]
-    [string]$Severity = 'Info'
+    [string]$Severity = 'Info',
+
+    [switch]$PassThru
 )
 
 begin {
@@ -69,13 +82,19 @@ process {
         )
     }
 
-    try {
-        $json = $payload | ConvertTo-Json -Depth 5
-        $resp = Invoke-RestMethod -Method Post -Uri $WebhookUrl -Body $json -ContentType "application/json"
-        Write-Host "[SUCCESS] Alert sent to Teams." -ForegroundColor Green
+    if ($PassThru) {
+        $payload
     }
-    catch {
-        Write-Error "Failed to send Teams alert: $($_.Exception.Message)"
+
+    if ($PSCmdlet.ShouldProcess($WebhookUrl, "Send Teams webhook alert")) {
+        try {
+            $json = $payload | ConvertTo-Json -Depth 5
+            Invoke-RestMethod -Method Post -Uri $WebhookUrl -Body $json -ContentType "application/json" | Out-Null
+            Write-Host "[SUCCESS] Alert sent to Teams." -ForegroundColor Green
+        }
+        catch {
+            Write-Error "Failed to send Teams alert: $($_.Exception.Message)"
+        }
     }
 }
 
