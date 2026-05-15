@@ -151,6 +151,68 @@ Describe 'Backup and restore automation' {
         Test-Path ([System.IO.Path]::ChangeExtension($encryptedArchive.FullName, '.decrypted.zip')) | Should -BeFalse
     }
 
+    It 'uploads backup artifacts to Azure Blob Storage when configured' {
+        $script:AzureContextCalls = @()
+        $script:AzureBlobCalls = @()
+        function New-AzStorageContext {
+            param([string]$ConnectionString)
+            $script:AzureContextCalls += [pscustomobject]@{
+                ConnectionString = $ConnectionString
+            }
+            'mock-storage-context'
+        }
+        function Set-AzStorageBlobContent {
+            param(
+                [string]$File,
+                [string]$Container,
+                [string]$Blob,
+                [string]$Context,
+                [switch]$Force
+            )
+            $script:AzureBlobCalls += [pscustomobject]@{
+                File      = $File
+                Container = $Container
+                Blob      = $Blob
+                Context   = $Context
+                Force     = [bool]$Force
+            }
+        }
+
+        Mock Get-Module { [pscustomobject]@{ Name = 'Az.Storage' } } -ParameterFilter {
+            $Name -eq 'Az.Storage' -and $ListAvailable
+        }
+        . $script:BackupScript `
+            -SourcePath $script:SourcePath `
+            -DestinationPath $script:BackupPath `
+            -AzureConnectionString 'UseDevelopmentStorage=true' `
+            -AzureContainer 'backups' `
+            -Tag 'azure'
+
+        $archives = @(Get-ChildItem -Path $script:BackupPath -Filter 'backup-*-azure.zip')
+        $archives | Should -HaveCount 1
+        $zip = $archives[0]
+        $manifestPath = [System.IO.Path]::ChangeExtension($zip.FullName, '.json')
+
+        $script:AzureContextCalls | Should -HaveCount 1
+        $script:AzureContextCalls[0].ConnectionString | Should -Be 'UseDevelopmentStorage=true'
+        $script:AzureBlobCalls | Should -HaveCount 2
+        $script:AzureBlobCalls.File | Should -Contain $zip.FullName
+        $script:AzureBlobCalls.File | Should -Contain $manifestPath
+        $script:AzureBlobCalls.Container | Should -Be @('backups', 'backups')
+        $script:AzureBlobCalls.Blob | Should -Contain $zip.Name
+        $script:AzureBlobCalls.Blob | Should -Contain ([System.IO.Path]::GetFileName($manifestPath))
+        $script:AzureBlobCalls.Context | Should -Be @('mock-storage-context', 'mock-storage-context')
+    }
+
+    It 'requires Azure upload settings to be provided together' {
+        {
+            & $script:BackupScript `
+                -SourcePath $script:SourcePath `
+                -DestinationPath $script:BackupPath `
+                -AzureConnectionString 'UseDevelopmentStorage=true'
+        } | Should -Throw '*AzureConnectionString and AzureContainer must be provided together*'
+    }
+
     It 'removes expired backup artifacts during retention cleanup' {
         foreach ($extension in 'zip', 'enc', 'json') {
             $oldPath = Join-Path $script:BackupPath "backup-20000101-000000-old.$extension"

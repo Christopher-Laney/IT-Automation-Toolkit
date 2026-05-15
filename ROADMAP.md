@@ -2,7 +2,6 @@
 
 ## Reliability
 
-- Add tests for Azure upload mocks.
 - Add a generated demo transcript or screenshots for the 15-minute walkthrough.
 
 ## Identity Automation
