@@ -2,7 +2,7 @@
 
 ## Reliability
 
-- Add tests for Azure upload mocks and webhook notification handling.
+- Add tests for Azure upload mocks.
 - Add a generated demo transcript or screenshots for the 15-minute walkthrough.
 
 ## Identity Automation
