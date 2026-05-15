@@ -1,9 +1,5 @@
 # Roadmap
 
-## Reliability
-
-- Add a generated demo transcript or screenshots for the 15-minute walkthrough.
-
 ## Identity Automation
 
 - Add ServiceNow or Jira ticket intake for onboarding and offboarding.

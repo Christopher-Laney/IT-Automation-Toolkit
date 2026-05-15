@@ -2,6 +2,14 @@
 
 This walkthrough shows the toolkit's safest high-value workflows without connecting to a production tenant or changing systems. It is designed for portfolio reviews, stakeholder demos, and first-time contributors.
 
+See `docs/demo_transcript.md` for a generated sample transcript.
+
+To refresh the sanitized markdown transcript after running the walkthrough, use:
+
+```powershell
+.\scripts\reporting\generate_demo_transcript.ps1 -OutputPath .\docs\demo_transcript.md
+```
+
 ## What This Demonstrates
 
 - CSV validation before onboarding users.
@@ -134,6 +142,7 @@ Invoke-ScriptAnalyzer -Path .\scripts -Recurse -Settings .\PSScriptAnalyzerSetti
 
 ## Where To Go Next
 
+- Refresh `docs/demo_transcript.md` when you want an updated shareable record of the walkthrough.
 - Read `docs/quickstart.md` for a broader local walkthrough.
 - Read `docs/scheduling.md` for Task Scheduler, Azure Automation, and GitHub Actions examples.
 - Read `docs/backup_restore.md` before running real backups or restores.
