@@ -39,6 +39,7 @@ Then preview tenant changes with `-WhatIf`:
 
 Review the proposed changes before running without `-WhatIf`.
 Generated temporary passwords are omitted from the normal report output by default. For a controlled encrypted handoff path, see [onboarding_password_handoff.md](onboarding_password_handoff.md).
+After a live onboarding batch, [identity_change_artifacts.md](identity_change_artifacts.md) shows how to turn the run report into a reviewable rollback ledger.
 
 ## 4. Prepare Optional Server Checks
 
