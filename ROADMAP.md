@@ -15,5 +15,4 @@
 
 ## Notifications
 
-- Add notification routing by severity and script category.
 - Add optional Slack webhook payload support.

@@ -1,0 +1,25 @@
+{
+  "default": {
+    "environmentVariable": "TEAMS_WEBHOOK_DEFAULT"
+  },
+  "severity": {
+    "Critical": {
+      "environmentVariable": "TEAMS_WEBHOOK_CRITICAL"
+    }
+  },
+  "categories": {
+    "Automation": {
+      "default": {
+        "environmentVariable": "TEAMS_WEBHOOK_AUTOMATION"
+      }
+    },
+    "Compliance": {
+      "default": {
+        "environmentVariable": "TEAMS_WEBHOOK_COMPLIANCE"
+      },
+      "Critical": {
+        "environmentVariable": "TEAMS_WEBHOOK_COMPLIANCE_CRITICAL"
+      }
+    }
+  }
+}

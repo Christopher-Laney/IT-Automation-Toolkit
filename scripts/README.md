@@ -58,6 +58,9 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 # Send a richer Teams adaptive-card alert
 .\notifications\teams_webhook_alert.ps1 -WebhookUrl $env:TEAMS_WEBHOOK_URL -Title "Baseline Complete" -Message "All scheduled checks completed." -Severity Info -CardFormat AdaptiveCard
 
+# Route alerts by category and severity from environment-backed config
+.\notifications\teams_webhook_alert.ps1 -RoutingConfigPath ..\config\notification_routes.json -Category Compliance -Title "Intune Drift" -Message "Review required." -Severity Critical -CardFormat AdaptiveCard
+
 # Deploy baseline Conditional Access settings
 .\compliance\set_conditional_access_policy.ps1 -Config ".\config\conditional_access_baseline.json"
 

@@ -113,6 +113,7 @@ end {
             -Title "IT Baseline Checks Completed" `
             -Message ('```' + $summary + '```') `
             -Severity "Info" `
+            -Category "Automation" `
             -CardFormat "AdaptiveCard"
     }
 }

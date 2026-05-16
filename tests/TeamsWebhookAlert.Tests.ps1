@@ -44,11 +44,98 @@ Describe 'Teams webhook alert sender' {
         $payload.attachments[0].content.body[0].text | Should -Be 'Baseline Completed'
         $payload.attachments[0].content.body[0].color | Should -Be 'Attention'
         $payload.attachments[0].content.body[2].facts[0].value | Should -Be 'Critical'
+        $payload.attachments[0].content.body[2].facts[1].value | Should -Be 'General'
 
         Should -Invoke Invoke-RestMethod -Times 1 -Exactly -ParameterFilter {
             (($Body | ConvertFrom-Json).attachments[0].content.type -eq 'AdaptiveCard') -and
             (($Body | ConvertFrom-Json).attachments[0].content.body[0].color -eq 'Attention')
         }
+    }
+
+    It 'routes alerts by exact category and severity before falling back' {
+        Mock Invoke-RestMethod {}
+
+        $env:TEAMS_WEBHOOK_DEFAULT = 'https://example.test/default'
+        $env:TEAMS_WEBHOOK_CRITICAL = 'https://example.test/critical'
+        $env:TEAMS_WEBHOOK_COMPLIANCE = 'https://example.test/compliance'
+        $env:TEAMS_WEBHOOK_COMPLIANCE_CRITICAL = 'https://example.test/compliance-critical'
+
+        $configPath = Join-Path $TestDrive 'routes.json'
+        @'
+{
+  "default": { "environmentVariable": "TEAMS_WEBHOOK_DEFAULT" },
+  "severity": {
+    "Critical": { "environmentVariable": "TEAMS_WEBHOOK_CRITICAL" }
+  },
+  "categories": {
+    "Compliance": {
+      "default": { "environmentVariable": "TEAMS_WEBHOOK_COMPLIANCE" },
+      "Critical": { "environmentVariable": "TEAMS_WEBHOOK_COMPLIANCE_CRITICAL" }
+    }
+  }
+}
+'@ | Set-Content -Path $configPath
+
+        $payload = & $script:TeamsAlertScript `
+            -RoutingConfigPath $configPath `
+            -Category Compliance `
+            -Title 'Compliance Failure' `
+            -Message 'Immediate review required.' `
+            -Severity Critical `
+            -PassThru
+
+        $payload.sections[0].facts[1].value | Should -Be 'Compliance'
+        Should -Invoke Invoke-RestMethod -Times 1 -Exactly -ParameterFilter {
+            $Uri -eq 'https://example.test/compliance-critical'
+        }
+    }
+
+    It 'falls back from category default to severity and global default routes' {
+        Mock Invoke-RestMethod {}
+
+        $env:TEAMS_WEBHOOK_DEFAULT = 'https://example.test/default'
+        $env:TEAMS_WEBHOOK_CRITICAL = 'https://example.test/critical'
+        $env:TEAMS_WEBHOOK_AUTOMATION = 'https://example.test/automation'
+
+        $configPath = Join-Path $TestDrive 'fallback-routes.json'
+        @'
+{
+  "default": { "environmentVariable": "TEAMS_WEBHOOK_DEFAULT" },
+  "severity": {
+    "Critical": { "environmentVariable": "TEAMS_WEBHOOK_CRITICAL" }
+  },
+  "categories": {
+    "Automation": {
+      "default": { "environmentVariable": "TEAMS_WEBHOOK_AUTOMATION" }
+    }
+  }
+}
+'@ | Set-Content -Path $configPath
+
+        & $script:TeamsAlertScript `
+            -RoutingConfigPath $configPath `
+            -Category Automation `
+            -Title 'Automation Notice' `
+            -Message 'Routine run.' `
+            -Severity Info
+
+        & $script:TeamsAlertScript `
+            -RoutingConfigPath $configPath `
+            -Category Identity `
+            -Title 'Identity Failure' `
+            -Message 'Immediate review required.' `
+            -Severity Critical
+
+        & $script:TeamsAlertScript `
+            -RoutingConfigPath $configPath `
+            -Category Identity `
+            -Title 'Identity Notice' `
+            -Message 'Routine run.' `
+            -Severity Info
+
+        Should -Invoke Invoke-RestMethod -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://example.test/automation' }
+        Should -Invoke Invoke-RestMethod -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://example.test/critical' }
+        Should -Invoke Invoke-RestMethod -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://example.test/default' }
     }
 
     It 'previews the payload with WhatIf without posting to Teams' {
