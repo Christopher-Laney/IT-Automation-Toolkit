@@ -1,0 +1,37 @@
+{
+  "generatedUtc": "2026-05-16T23:33:27.2283600Z",
+  "config": {
+    "path": "config/dashboard_reports.sample.json",
+    "sha256": "A1E5D879E73FDA3BD01A507ABED28D1CED5B9A3DA5AADD6AA8C1B9146D667F06"
+  },
+  "screenshot": {
+    "path": "dashboards/sample_output_screenshot.png",
+    "sha256": "0EEA625EFDA3050163AC7FAE1D64A8C7CF67399DF8655D29C479151B364E1F61"
+  },
+  "sampleInputs": [
+    {
+      "path": "samples/reports/inactive_users.csv",
+      "sha256": "9459A1EA737F3428797390BFB7E43A86560FE39968690E8690772E9B0724A03A"
+    },
+    {
+      "path": "samples/reports/local_admins.csv",
+      "sha256": "66396227859AD905E7A6835F2193ABB3E5B70AC69DEFCD7E8EC589320CC98EA7"
+    },
+    {
+      "path": "samples/reports/intune_compliance.csv",
+      "sha256": "C792BA3459A883E106B3FB582200A276636F8D4A8F43168633BBFA87DF2A3DC4"
+    },
+    {
+      "path": "samples/reports/m365_license_audit.csv",
+      "sha256": "D163FCE4C8376DD94CB26EF7296B2596885675C69C806D59D8214E155727A41E"
+    },
+    {
+      "path": "samples/reports/ssl_expiry.csv",
+      "sha256": "BC79D25FBB3CD6B341949500CE48C497E859C4EF0567925E6C7B17A70B3EAB86"
+    },
+    {
+      "path": "samples/reports/system_health.csv",
+      "sha256": "3F2B4F6A9C5409292A28A21E825AB41297462EE0D499F241CC1B1128AF3DC473"
+    }
+  ]
+}

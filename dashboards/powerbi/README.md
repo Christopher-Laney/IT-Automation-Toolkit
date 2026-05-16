@@ -51,3 +51,4 @@ Use the sanitized files in `samples/reports` while designing the report. Swap th
 - Remove credentials, gateways, tenant IDs, production paths, and cached data before committing.
 - Keep production report exports in `reports` or another ignored path.
 - Refresh screenshots only from sanitized sample data.
+- For the HTML dashboard screenshot workflow, follow `docs/dashboard_guidance.md` and regenerate `dashboards/sample_output_screenshot.manifest.json` after every refresh.
