@@ -1,0 +1,42 @@
+# Copy this file to azure-pipelines.yml to enable it in Azure DevOps.
+# It mirrors the repository's GitHub Actions validation workflow.
+
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: windows-latest
+
+steps:
+  - checkout: self
+
+  - task: PowerShell@2
+    displayName: Install validation tools
+    inputs:
+      targetType: inline
+      pwsh: true
+      script: |
+        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+        Install-Module Pester -Scope CurrentUser -Force -SkipPublisherCheck
+        Install-Module PSScriptAnalyzer -Scope CurrentUser -Force -SkipPublisherCheck
+
+  - task: PowerShell@2
+    displayName: Run parser tests
+    inputs:
+      targetType: inline
+      pwsh: true
+      script: Invoke-Pester -Path ./tests -CI
+
+  - task: PowerShell@2
+    displayName: Run script analyzer
+    inputs:
+      targetType: inline
+      pwsh: true
+      script: Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Settings ./PSScriptAnalyzerSettings.psd1 -Severity Error

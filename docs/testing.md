@@ -80,3 +80,6 @@ The workflow uses read-only repository permissions and runs:
 
 - `Invoke-Pester -Path ./tests -CI`
 - `Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Settings ./PSScriptAnalyzerSettings.psd1 -Severity Error`
+
+Organizations that standardize on Azure DevOps can start from `samples/pipelines/azure-devops-validation.yml`.
+It runs the same local commands so the validation behavior stays consistent across CI providers.
