@@ -39,9 +39,36 @@ Send an adaptive card:
 
 `scripts/automation/invoke_it_baseline_checks.ps1` uses the adaptive-card format for its Teams summary alerts.
 
+## Routing
+
+Use `config/notification_routes.sample.json` as a starter route map when different Teams channels should receive different alerts.
+Routes reference environment-variable names rather than storing live webhook URLs in source control.
+
+The sender resolves routes in this order:
+
+1. exact `category + severity`
+2. category default
+3. severity default
+4. global default
+
+Example route-driven send:
+
+```powershell
+.\scripts\notifications\teams_webhook_alert.ps1 `
+  -RoutingConfigPath .\config\notification_routes.json `
+  -Category Compliance `
+  -Title "Intune Compliance Drift" `
+  -Message "Three devices need review." `
+  -Severity Critical `
+  -CardFormat AdaptiveCard
+```
+
+Copy the sample config to an ignored local file or secret-managed deployment location, then populate the referenced environment variables in your scheduler, pipeline, or automation account.
+
 ## Operational Guidance
 
 - Keep webhook URLs in environment variables, secret stores, or scheduler-managed secrets.
 - Use `Info` for successful runs, `Warning` when operator review is useful, and `Critical` when immediate action is expected.
+- Use routing when operational ownership differs by script category or when critical alerts need a separate escalation channel.
 - Start with `-WhatIf -PassThru` when wiring a new alert into an automation path.
 - Prefer concise alert titles and put supporting detail in the message body or linked report output.

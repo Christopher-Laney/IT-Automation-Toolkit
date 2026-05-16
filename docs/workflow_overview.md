@@ -14,4 +14,4 @@ This document describes the high-level flow across onboarding, offboarding, back
 - Compliance checks generate inactive-user, license, and Intune reports.
 - Operational checks use `config/servers.txt` for server health and service checks.
 - Dashboard generation runs after selected checks so the latest report files can be summarized.
-- Teams notifications are optional, should use a webhook stored outside source control, and can use adaptive-card formatting for clearer operational summaries.
+- Teams notifications are optional, should use webhooks stored outside source control, can use adaptive-card formatting for clearer operational summaries, and can be routed by category plus severity.
