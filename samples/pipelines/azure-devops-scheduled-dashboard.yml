@@ -1,0 +1,36 @@
+# Copy this file to azure-pipelines.yml or import it as a dedicated pipeline.
+# It generates a sanitized sample dashboard and publishes it as a build artifact.
+
+trigger: none
+pr: none
+
+schedules:
+  - cron: "0 13 * * 1"
+    displayName: Weekly sample dashboard
+    branches:
+      include:
+        - main
+    always: true
+
+pool:
+  vmImage: windows-latest
+
+steps:
+  - checkout: self
+
+  - task: PowerShell@2
+    displayName: Generate sample dashboard
+    inputs:
+      targetType: inline
+      pwsh: true
+      script: |
+        New-Item -ItemType Directory -Path reports -Force | Out-Null
+        ./scripts/reporting/generate_it_audit_dashboard.ps1 `
+          -ConfigPath ./config/dashboard_reports.sample.json `
+          -OutputPath ./reports/sample_it_audit_dashboard.html
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish sample dashboard
+    inputs:
+      targetPath: reports/sample_it_audit_dashboard.html
+      artifact: sample-it-audit-dashboard

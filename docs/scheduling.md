@@ -60,6 +60,15 @@ Before enabling a scheduled workflow:
 - Prefer sample-data or validation-only workflows for public repositories.
 - Keep generated reports as short-lived workflow artifacts unless they are sanitized.
 
+## Azure DevOps Pipelines
+
+Use the samples under `samples/pipelines` when your organization runs CI or reporting jobs in Azure DevOps instead of GitHub Actions.
+
+- `azure-devops-validation.yml` mirrors the repository validation workflow with Pester and PSScriptAnalyzer.
+- `azure-devops-scheduled-dashboard.yml` generates the sanitized sample dashboard on a weekly schedule and publishes it as a pipeline artifact.
+
+See [azure_devops_pipelines.md](azure_devops_pipelines.md) for setup notes, secret-handling guidance, and a suggested rollout sequence.
+
 ## Operational Notes
 
 - Start every new schedule with validation or `-WhatIf`.
