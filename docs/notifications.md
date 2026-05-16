@@ -1,6 +1,9 @@
 # Notifications Guide
 
-The toolkit includes `scripts/notifications/teams_webhook_alert.ps1` as a reusable Teams webhook sender for backups, health checks, and baseline summaries.
+The toolkit includes reusable webhook senders for both Teams and Slack:
+
+- `scripts/notifications/teams_webhook_alert.ps1`
+- `scripts/notifications/slack_webhook_alert.ps1`
 
 ## Teams Card Formats
 
@@ -39,6 +42,37 @@ Send an adaptive card:
 
 `scripts/automation/invoke_it_baseline_checks.ps1` uses the adaptive-card format for its Teams summary alerts.
 
+## Slack Payloads
+
+| Format | Best For |
+|---|---|
+| `PlainText` | Simple Slack webhook alerts and compatibility with minimal downstream parsing. |
+| `BlockKit` | Richer Slack alerts with distinct title, message, severity, category, and timestamp fields. |
+
+Preview a Slack payload without posting:
+
+```powershell
+.\scripts\notifications\slack_webhook_alert.ps1 `
+  -WebhookUrl "https://example.invalid/slack" `
+  -Title "Backup Warning" `
+  -Message "Backup completed with warnings." `
+  -Severity Warning `
+  -WhatIf `
+  -PassThru
+```
+
+Send a richer Block Kit alert:
+
+```powershell
+.\scripts\notifications\slack_webhook_alert.ps1 `
+  -WebhookUrl $env:SLACK_WEBHOOK_URL `
+  -Title "Intune Compliance Drift" `
+  -Message "Three devices need review." `
+  -Severity Critical `
+  -Category Compliance `
+  -PayloadFormat BlockKit
+```
+
 ## Routing
 
 Use `config/notification_routes.sample.json` as a starter route map when different Teams channels should receive different alerts.
@@ -70,5 +104,6 @@ Copy the sample config to an ignored local file or secret-managed deployment loc
 - Keep webhook URLs in environment variables, secret stores, or scheduler-managed secrets.
 - Use `Info` for successful runs, `Warning` when operator review is useful, and `Critical` when immediate action is expected.
 - Use routing when operational ownership differs by script category or when critical alerts need a separate escalation channel.
+- Use Slack `BlockKit` when operators benefit from a more structured alert surface than plain text.
 - Start with `-WhatIf -PassThru` when wiring a new alert into an automation path.
 - Prefer concise alert titles and put supporting detail in the message body or linked report output.

@@ -35,6 +35,7 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 |  | log_cleanup.ps1 | Safe cleanup of logs/temp files. | Monthly |
 |  | invoke_it_baseline_checks.ps1 | Master orchestration run. | Weekly / Daily |
 | **Notifications** | teams_webhook_alert.ps1 | Reusable Teams alert sender. | Called by other scripts |
+|  | slack_webhook_alert.ps1 | Reusable Slack alert sender. | Called by other scripts |
 
 
 ## 🔥 Usage Examples
@@ -61,6 +62,9 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 # Route alerts by category and severity from environment-backed config
 .\notifications\teams_webhook_alert.ps1 -RoutingConfigPath ..\config\notification_routes.json -Category Compliance -Title "Intune Drift" -Message "Review required." -Severity Critical -CardFormat AdaptiveCard
 
+# Send a richer Slack Block Kit alert
+.\notifications\slack_webhook_alert.ps1 -WebhookUrl $env:SLACK_WEBHOOK_URL -Title "Intune Drift" -Message "Review required." -Severity Critical -Category Compliance -PayloadFormat BlockKit
+
 # Deploy baseline Conditional Access settings
 .\compliance\set_conditional_access_policy.ps1 -Config ".\config\conditional_access_baseline.json"
 
@@ -72,6 +76,6 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 
 - Add these to a **server automation schedule** via Task Scheduler / Azure Automation / Runbooks. See `docs/scheduling.md` for starter examples.
 - Build pipelines through **GitHub Actions** or **Azure DevOps**.
-- Centralize notifications using **Teams Webhooks** (included)  
+- Centralize notifications using **Teams or Slack webhooks** (included)  
 - Combine multiple scripts into **IT monthly compliance rollups**  
 - Use onboarding/offboarding scripts to **standardize HR → IT workflows**

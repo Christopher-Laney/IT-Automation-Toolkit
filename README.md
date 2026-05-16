@@ -99,7 +99,7 @@ Power BI starter source notes, Power Query snippets, and DAX measures live under
 
 For scheduled execution examples across Task Scheduler, Azure Automation, and GitHub Actions, see [docs/scheduling.md](docs/scheduling.md).
 For Azure DevOps CI and scheduled reporting starters, see [docs/azure_devops_pipelines.md](docs/azure_devops_pipelines.md).
-For Teams webhook usage and adaptive-card alert examples, see [docs/notifications.md](docs/notifications.md).
+For Teams and Slack webhook usage examples, see [docs/notifications.md](docs/notifications.md).
 
 To exercise the master baseline runner without tenant credentials or server access, use:
 
@@ -140,7 +140,7 @@ Get-ChildItem .\scripts,.\tests -Recurse -Filter *.ps1 | ForEach-Object {
 
 ## 🧱 Future Enhancements
 - Integration with ServiceNow and Jira for ticket automation  
-- Slack or Teams bot for real-time workflow status  
+- Bot-driven workflow status updates for real-time collaboration
 - API-based license optimization tracking  
 
 ---
