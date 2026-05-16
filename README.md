@@ -103,6 +103,7 @@ For Teams and Slack webhook usage examples, see [docs/notifications.md](docs/not
 For encrypted onboarding credential handoff guidance, see [docs/onboarding_password_handoff.md](docs/onboarding_password_handoff.md).
 For onboarding audit and rollback artifacts, see [docs/identity_change_artifacts.md](docs/identity_change_artifacts.md).
 For approval-gated onboarding and offboarding, see [docs/identity_approval_gates.md](docs/identity_approval_gates.md).
+For exported ServiceNow and Jira ticket intake examples, see [docs/identity_ticket_intake.md](docs/identity_ticket_intake.md).
 
 To exercise the master baseline runner without tenant credentials or server access, use:
 
@@ -142,7 +143,6 @@ Get-ChildItem .\scripts,.\tests -Recurse -Filter *.ps1 | ForEach-Object {
 ---
 
 ## 🧱 Future Enhancements
-- Integration with ServiceNow and Jira for ticket automation  
 - Bot-driven workflow status updates for real-time collaboration
 - API-based license optimization tracking  
 

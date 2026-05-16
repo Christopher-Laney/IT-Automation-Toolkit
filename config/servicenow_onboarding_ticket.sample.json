@@ -1,0 +1,14 @@
+{
+  "number": "RITM0012345",
+  "u_request_type": "Onboarding",
+  "requested_for": {
+    "name": "Jane Doe",
+    "email": "jane.doe@contoso.com"
+  },
+  "u_usage_location": "US",
+  "u_license_sku": "ENTERPRISEPACK;POWER_BI_PRO",
+  "u_groups": "All-Employees;Finance",
+  "u_department": "Finance",
+  "u_manager_upn": "manager@contoso.com",
+  "u_start_date": "2026-06-01"
+}
