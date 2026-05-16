@@ -12,7 +12,3 @@
 - Add a sanitized Power BI `.pbit` template based on the sample CSV model.
 - Add platform-specific Intune payload mappings for additional compliance settings.
 - Add generated screenshot refresh guidance for dashboard sample data.
-
-## Notifications
-
-- Add optional Slack webhook payload support.
