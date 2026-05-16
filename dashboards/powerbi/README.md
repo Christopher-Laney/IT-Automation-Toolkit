@@ -42,8 +42,10 @@ Use the sanitized files in `samples/reports` while designing the report. Swap th
 2. Set `SourceRoot` to the repository root or to a parameter named `ToolkitRoot`.
 3. Load all six source tables.
 4. Add the measures from `measures.dax`.
-5. Build visuals from the recommended pages above.
-6. Save as a sanitized `.pbit` template if you want to commit a Power BI asset.
+5. Import `theme.json`.
+6. Build visuals from the recommended pages above.
+7. Use `template_build_spec.json` as the lightweight source-of-truth checklist for the template shape.
+8. Follow `docs/powerbi_template_build.md` when exporting a sanitized `.pbit` template.
 
 ## Commit Safety
 
