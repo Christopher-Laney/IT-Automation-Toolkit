@@ -15,6 +15,5 @@
 
 ## Notifications
 
-- Add Teams adaptive-card formatting for high-signal operational alerts.
 - Add notification routing by severity and script category.
 - Add optional Slack webhook payload support.

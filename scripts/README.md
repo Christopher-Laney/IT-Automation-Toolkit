@@ -55,6 +55,9 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 # Preview a Teams alert payload without sending it
 .\notifications\teams_webhook_alert.ps1 -WebhookUrl "https://example.invalid/webhook" -Title "Backup Warning" -Message "Preview only." -Severity Warning -WhatIf -PassThru
 
+# Send a richer Teams adaptive-card alert
+.\notifications\teams_webhook_alert.ps1 -WebhookUrl $env:TEAMS_WEBHOOK_URL -Title "Baseline Complete" -Message "All scheduled checks completed." -Severity Info -CardFormat AdaptiveCard
+
 # Deploy baseline Conditional Access settings
 .\compliance\set_conditional_access_policy.ps1 -Config ".\config\conditional_access_baseline.json"
 
