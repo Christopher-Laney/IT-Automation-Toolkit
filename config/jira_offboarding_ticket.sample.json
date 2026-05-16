@@ -1,0 +1,16 @@
+{
+  "key": "IT-204",
+  "fields": {
+    "customfield_request_type": "Offboarding",
+    "customfield_user_upn": "john.smith@contoso.com",
+    "customfield_block_sign_in": true,
+    "customfield_reset_password": true,
+    "customfield_revoke_sessions": true,
+    "customfield_remove_from_groups": true,
+    "customfield_remove_licenses": true,
+    "customfield_exchange_convert_to_shared": true,
+    "customfield_exchange_litigation_hold": false,
+    "customfield_one_drive_lock": true,
+    "customfield_transfer_one_drive_to": "manager@contoso.com"
+  }
+}

@@ -12,6 +12,7 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 | Category | Script | Purpose | Schedule |
 |---|---|---|---|
 | **Identity** | onboarding.ps1 | Create new users from CSV. | On-demand |
+|  | convert_identity_ticket.ps1 | Convert exported ServiceNow/Jira tickets into workflow inputs. | On-demand |
 |  | export_identity_change_artifact.ps1 | Build rollback-oriented onboarding artifacts. | After onboarding runs |
 |  | offboarding.ps1 | Disable accounts & revoke sessions. | On-demand |
 |  | inactive_user_report.ps1 | Find inactive accounts. | Weekly / Monthly |
@@ -50,6 +51,12 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 
 # Run onboarding with an encrypted temporary-password handoff artifact
 .\identity\onboarding.ps1 -UserList ..\config\new_users.csv -SetTempPassword -ApprovalRecordPath ..\config\approval_record.json -TemporaryPasswordHandoffPath ..\logs\onboarding_password_handoff.json -TemporaryPasswordKeyPath ..\logs\onboarding-handoff.key
+
+# Convert a ServiceNow onboarding export into a runnable CSV
+.\identity\convert_identity_ticket.ps1 -Provider ServiceNow -Path ..\config\servicenow_onboarding_ticket.sample.json -OutputPath ..\logs\onboarding_from_ticket.csv
+
+# Convert a Jira offboarding export into a reviewed JSON plan
+.\identity\convert_identity_ticket.ps1 -Provider Jira -Path ..\config\jira_offboarding_ticket.sample.json -OutputPath ..\logs\offboarding_plan.json
 
 # Build a rollback-oriented artifact from an onboarding run report
 .\identity\export_identity_change_artifact.ps1 -ReportPath ..\logs\onboarding_run.csv -OutputPath ..\logs\onboarding_change_artifact.json
