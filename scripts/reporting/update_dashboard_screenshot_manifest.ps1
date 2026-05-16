@@ -40,9 +40,9 @@ function Get-RelativePath {
     $resolved = (Resolve-Path -LiteralPath $Path).Path
     $root = (Resolve-Path -LiteralPath '.').Path
     if ($resolved.StartsWith($root, [System.StringComparison]::OrdinalIgnoreCase)) {
-        return $resolved.Substring($root.Length).TrimStart([System.IO.Path]::DirectorySeparatorChar)
+        return $resolved.Substring($root.Length).TrimStart([System.IO.Path]::DirectorySeparatorChar).Replace('\', '/')
     }
-    return $resolved
+    return $resolved.Replace('\', '/')
 }
 
 function Get-FileFingerprint {
