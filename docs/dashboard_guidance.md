@@ -13,6 +13,7 @@ Recommended tracked assets:
 - `dashboards/powerbi`: Power BI source guidance, starter queries, and measures.
 - `docs/dashboard_guidance.md`: dashboard instructions and expected schemas.
 - `dashboards/sample_output_screenshot.png`: representative screenshot.
+- `dashboards/sample_output_screenshot.manifest.json`: screenshot refresh manifest.
 - `samples/reports/*.csv`: sanitized sample report data for demos.
 
 Avoid committing:
@@ -48,6 +49,31 @@ Use the included sanitized sample data to preview the dashboard without connecti
 ```
 
 This uses CSV files in `samples/reports`. The sample data is intentionally fictional and safe to commit.
+
+## Refresh The Sample Screenshot
+
+Use only sanitized sample data when refreshing `dashboards/sample_output_screenshot.png`.
+
+1. Generate the sample dashboard:
+
+```powershell
+.\scripts\reporting\generate_it_audit_dashboard.ps1 `
+  -ConfigPath .\config\dashboard_reports.sample.json `
+  -OutputPath .\reports\sample_it_audit_dashboard.html
+```
+
+2. Open `reports/sample_it_audit_dashboard.html` in a browser and capture a representative screenshot at a stable desktop viewport.
+3. Replace `dashboards/sample_output_screenshot.png`.
+4. Regenerate the screenshot manifest:
+
+```powershell
+.\scripts\reporting\update_dashboard_screenshot_manifest.ps1 `
+  -ConfigPath .\config\dashboard_reports.sample.json `
+  -ScreenshotPath .\dashboards\sample_output_screenshot.png `
+  -OutputPath .\dashboards\sample_output_screenshot.manifest.json
+```
+
+Refresh the screenshot whenever `samples/reports/*.csv`, `config/dashboard_reports.sample.json`, or the dashboard layout changes. The manifest records the exact source hashes used for the last committed screenshot so reviewers can see whether the image and sample inputs were refreshed together.
 
 ## Configure Report Inputs
 

@@ -28,6 +28,7 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 |  | m365_license_audit.ps1 | License usage + missing allocation. | Weekly / Monthly |
 |  | ssl_certificate_expiry_report.ps1 | Cert age/status monitoring. | Weekly / Monthly |
 |  | generate_it_audit_dashboard.ps1 | Build HTML dashboard of reports. | Weekly / Monthly |
+|  | update_dashboard_screenshot_manifest.ps1 | Record sample screenshot source hashes. | After screenshot refresh |
 |  | system_health_report.ps1 | CPU/RAM/Disk status snapshot. | Daily / Weekly |
 |  | local_admin_audit.ps1 | List local admins (security). | Monthly / Audits |
 | **Automation** | backup_automation.ps1 | Backup + hashing verification. | Daily |
@@ -69,6 +70,9 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 
 # Generate dashboard after reports exist
 .\reporting\generate_it_audit_dashboard.ps1
+
+# Refresh the committed screenshot manifest after updating the sample dashboard image
+.\reporting\update_dashboard_screenshot_manifest.ps1
 
 # Generate a sanitized transcript of the no-tenant demo walkthrough
 .\reporting\generate_demo_transcript.ps1 -OutputPath ..\docs\demo_transcript.md
