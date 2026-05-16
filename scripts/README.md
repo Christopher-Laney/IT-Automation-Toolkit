@@ -49,10 +49,16 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 .\automation\invoke_it_baseline_checks.ps1 -RunCompliance -RunOps
 
 # Run onboarding with an encrypted temporary-password handoff artifact
-.\identity\onboarding.ps1 -UserList ..\config\new_users.csv -SetTempPassword -TemporaryPasswordHandoffPath ..\logs\onboarding_password_handoff.json -TemporaryPasswordKeyPath ..\logs\onboarding-handoff.key
+.\identity\onboarding.ps1 -UserList ..\config\new_users.csv -SetTempPassword -ApprovalRecordPath ..\config\approval_record.json -TemporaryPasswordHandoffPath ..\logs\onboarding_password_handoff.json -TemporaryPasswordKeyPath ..\logs\onboarding-handoff.key
 
 # Build a rollback-oriented artifact from an onboarding run report
 .\identity\export_identity_change_artifact.ps1 -ReportPath ..\logs\onboarding_run.csv -OutputPath ..\logs\onboarding_change_artifact.json
+
+# Validate an approval-gated onboarding batch
+.\identity\onboarding.ps1 -UserList ..\config\new_users.csv -ApprovalRecordPath ..\config\approval_record.json -PrivilegedGroupNames 'Privileged-Admins' -ValidateOnly
+
+# Validate an approval-gated offboarding plan
+.\identity\offboarding.ps1 -UserPrincipalName jane.doe@contoso.com -ApprovalRecordPath ..\config\approval_record.json -ValidateOnly
 
 # Generate dashboard after reports exist
 .\reporting\generate_it_audit_dashboard.ps1

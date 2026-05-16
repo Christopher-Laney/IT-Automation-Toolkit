@@ -6,7 +6,7 @@ This guide shows safe starting points for running toolkit workflows on a schedul
 
 | Workflow | Suggested Frequency | Safe First Command |
 |---|---:|---|
-| Onboarding CSV validation | Before each onboarding batch | `.\scripts\identity\onboarding.ps1 -UserList .\config\new_users.csv -ValidateOnly` |
+| Onboarding CSV validation | Before each onboarding batch | `.\scripts\identity\onboarding.ps1 -UserList .\config\new_users.csv -ApprovalRecordPath .\config\approval_record.sample.json -ValidateOnly` |
 | Intune template validation | Before policy deployment | `.\scripts\compliance\apply_intune_policy.ps1 -Path .\config\intune_policy_template.json -ValidateOnly` |
 | Baseline reporting | Daily or weekly | `.\scripts\automation\invoke_it_baseline_checks.ps1 -RunCompliance` |
 | Server operations checks | Daily | `.\scripts\automation\invoke_it_baseline_checks.ps1 -RunOps` |

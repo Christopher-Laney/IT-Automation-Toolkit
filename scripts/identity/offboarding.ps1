@@ -34,6 +34,13 @@
 .PARAMETER TicketId
   Optional ticket/reference for logging (e.g., INC-12345).
 
+.PARAMETER ApprovalRecordPath
+  Path to a JSON approval record required for destructive offboarding actions.
+
+.PARAMETER ValidateOnly
+  Validate approval requirements for the selected action plan, then exit before
+  connecting to Microsoft Graph.
+
 .PARAMETER BlockSignIn
   Disable account sign-in (default: On).
 
@@ -91,6 +98,8 @@
 param(
   [Parameter(Mandatory=$true)][string]$UserPrincipalName,
   [string]$TicketId,
+  [string]$ApprovalRecordPath,
+  [switch]$ValidateOnly,
 
   [switch]$BlockSignIn = $true,
   [switch]$ResetPassword,
@@ -163,6 +172,55 @@ function Is-ProtectedAccount($user) {
   # Adjust to your tenancy: protect break-glass or service accounts
   $protectedHints = @('breakglass','emergency','service','svc_')
   ($protectedHints | Where-Object { $user.UserPrincipalName -like "*$_*" }).Count -gt 0
+}
+
+function Import-ApprovalRecord {
+  param([Parameter(Mandatory=$true)][string]$Path)
+
+  if (-not (Test-Path $Path)) {
+    throw "Approval record not found: $Path"
+  }
+
+  try {
+    $record = Get-Content -Raw -Path $Path | ConvertFrom-Json -ErrorAction Stop
+  } catch {
+    throw "Approval record must be valid JSON."
+  }
+
+  if (-not $record.ticketId) { throw "Approval record must include ticketId." }
+  if (-not $record.approvedBy) { throw "Approval record must include approvedBy." }
+  if (-not $record.approvedActions) { throw "Approval record must include approvedActions." }
+  if ($record.expiresUtc -and ([datetime]$record.expiresUtc).ToUniversalTime() -lt (Get-Date).ToUniversalTime()) {
+    throw "Approval record is expired."
+  }
+
+  return $record
+}
+
+function Assert-ApprovedActions {
+  param(
+    [string[]]$RequiredActions,
+    [object]$ApprovalRecord
+  )
+
+  if (-not $RequiredActions -or $RequiredActions.Count -eq 0) { return }
+  if (-not $ApprovalRecord) {
+    throw "ApprovalRecordPath is required for action(s): $($RequiredActions -join ', ')."
+  }
+
+  $approved = @($ApprovalRecord.approvedActions | ForEach-Object { $_.ToString().ToLowerInvariant() })
+  $missing = $RequiredActions | Where-Object { $approved -notcontains $_.ToLowerInvariant() }
+  if ($missing) {
+    throw "Approval record is missing approved action(s): $($missing -join ', ')."
+  }
+}
+
+function Get-OffboardingApprovalActions {
+  $required = @()
+  if ($BlockSignIn -or $ResetPassword -or $RevokeSessions -or $RemoveFromGroups -or $RemoveLicenses) {
+    $required += 'DestructiveOffboarding'
+  }
+  return $required
 }
 
 function Remove-UserFromGroups($userId, [string[]]$Exclude) {
@@ -272,6 +330,16 @@ function SPO-OneDriveActions($upn, [int]$retentionDays, $successorUpn) {
 try {
   Ensure-Log
   Write-Log "Starting offboarding for $UserPrincipalName (Ticket: $TicketId)" 'INFO'
+
+  $requiredApprovalActions = Get-OffboardingApprovalActions
+  $approvalRecord = if ($ApprovalRecordPath) { Import-ApprovalRecord -Path $ApprovalRecordPath } else { $null }
+  Assert-ApprovedActions -RequiredActions $requiredApprovalActions -ApprovalRecord $approvalRecord
+
+  if ($ValidateOnly) {
+    Write-Log "Approval validation passed for action(s): $($requiredApprovalActions -join ', ')." 'INFO'
+    return
+  }
+
   Require-Graph
 
   $user = Get-UserObject -UPN $UserPrincipalName

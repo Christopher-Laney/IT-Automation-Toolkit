@@ -53,6 +53,7 @@ Validate the sample onboarding CSV without connecting to Microsoft Graph:
 ```powershell
 .\scripts\identity\onboarding.ps1 `
   -UserList .\config\new_users.csv `
+  -ApprovalRecordPath .\config\approval_record.sample.json `
   -ValidateOnly
 ```
 

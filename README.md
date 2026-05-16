@@ -73,8 +73,8 @@ The project emphasizes **automation, security, and scalability**, showing how a 
 
 ```powershell
 # Run onboarding workflow
-.\scripts\identity\onboarding.ps1 -UserList ".\config\new_users.csv" -ValidateOnly
-.\scripts\identity\onboarding.ps1 -UserList ".\config\new_users.csv" -WhatIf
+.\scripts\identity\onboarding.ps1 -UserList ".\config\new_users.csv" -ApprovalRecordPath ".\config\approval_record.sample.json" -ValidateOnly
+.\scripts\identity\onboarding.ps1 -UserList ".\config\new_users.csv" -ApprovalRecordPath ".\config\approval_record.sample.json" -WhatIf
 
 # Generate inventory report
 .\scripts\reporting\inventory_report.ps1 -ExportPath ".\reports\inventory.csv"
@@ -102,6 +102,7 @@ For Azure DevOps CI and scheduled reporting starters, see [docs/azure_devops_pip
 For Teams and Slack webhook usage examples, see [docs/notifications.md](docs/notifications.md).
 For encrypted onboarding credential handoff guidance, see [docs/onboarding_password_handoff.md](docs/onboarding_password_handoff.md).
 For onboarding audit and rollback artifacts, see [docs/identity_change_artifacts.md](docs/identity_change_artifacts.md).
+For approval-gated onboarding and offboarding, see [docs/identity_approval_gates.md](docs/identity_approval_gates.md).
 
 To exercise the master baseline runner without tenant credentials or server access, use:
 

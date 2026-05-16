@@ -22,6 +22,7 @@ Do not commit it to the repository.
 .\scripts\identity\onboarding.ps1 `
   -UserList .\config\new_users.csv `
   -SetTempPassword `
+  -ApprovalRecordPath .\config\approval_record.sample.json `
   -ReportPath .\logs\onboarding_run.csv `
   -TemporaryPasswordHandoffPath .\logs\onboarding_password_handoff.json `
   -TemporaryPasswordKeyPath .\logs\onboarding-handoff.key

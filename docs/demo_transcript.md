@@ -17,7 +17,7 @@ Get-ChildItem .\scripts,.\tests -Recurse -Filter *.ps1 | ForEach-Object { <parse
 ## Validate Onboarding Input
 
 ```powershell
-.\scripts\identity\onboarding.ps1 -UserList .\config\new_users.csv -ValidateOnly
+.\scripts\identity\onboarding.ps1 -UserList .\config\new_users.csv -ApprovalRecordPath .\config\approval_record.sample.json -ValidateOnly
 ```
 
 ```text
@@ -60,4 +60,3 @@ Sample IT audit dashboard generated from sanitized reports.
 Backup preview complete:
   Planned ZIP: ./reports/backup-demo/backup-<timestamp>.zip
 ```
-
