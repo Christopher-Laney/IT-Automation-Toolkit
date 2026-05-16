@@ -4,7 +4,6 @@
 
 - Add ServiceNow or Jira ticket intake for onboarding and offboarding.
 - Add approval gates for license assignment, privileged groups, and destructive offboarding actions.
-- Add rollback/export artifacts for group and license changes.
 
 ## Compliance And Reporting
 

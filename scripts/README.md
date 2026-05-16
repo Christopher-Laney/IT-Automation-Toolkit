@@ -12,6 +12,7 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 | Category | Script | Purpose | Schedule |
 |---|---|---|---|
 | **Identity** | onboarding.ps1 | Create new users from CSV. | On-demand |
+|  | export_identity_change_artifact.ps1 | Build rollback-oriented onboarding artifacts. | After onboarding runs |
 |  | offboarding.ps1 | Disable accounts & revoke sessions. | On-demand |
 |  | inactive_user_report.ps1 | Find inactive accounts. | Weekly / Monthly |
 |  | group_membership_audit.ps1 | Export group membership for audits. | Quarterly |
@@ -49,6 +50,9 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 
 # Run onboarding with an encrypted temporary-password handoff artifact
 .\identity\onboarding.ps1 -UserList ..\config\new_users.csv -SetTempPassword -TemporaryPasswordHandoffPath ..\logs\onboarding_password_handoff.json -TemporaryPasswordKeyPath ..\logs\onboarding-handoff.key
+
+# Build a rollback-oriented artifact from an onboarding run report
+.\identity\export_identity_change_artifact.ps1 -ReportPath ..\logs\onboarding_run.csv -OutputPath ..\logs\onboarding_change_artifact.json
 
 # Generate dashboard after reports exist
 .\reporting\generate_it_audit_dashboard.ps1

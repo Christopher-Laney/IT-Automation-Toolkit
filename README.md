@@ -101,6 +101,7 @@ For scheduled execution examples across Task Scheduler, Azure Automation, and Gi
 For Azure DevOps CI and scheduled reporting starters, see [docs/azure_devops_pipelines.md](docs/azure_devops_pipelines.md).
 For Teams and Slack webhook usage examples, see [docs/notifications.md](docs/notifications.md).
 For encrypted onboarding credential handoff guidance, see [docs/onboarding_password_handoff.md](docs/onboarding_password_handoff.md).
+For onboarding audit and rollback artifacts, see [docs/identity_change_artifacts.md](docs/identity_change_artifacts.md).
 
 To exercise the master baseline runner without tenant credentials or server access, use:
 
