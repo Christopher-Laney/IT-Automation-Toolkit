@@ -17,6 +17,10 @@
 .PARAMETER ValidateOnly
   Validate the template schema and exit before connecting to Microsoft Graph.
 
+.PARAMETER PreviewPayload
+  Validate the template, emit the generated per-platform payloads, and exit
+  before connecting to Microsoft Graph.
+
 .EXAMPLE
   .\apply_intune_policy.ps1
 
@@ -27,7 +31,8 @@
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
   [string]$Path = ".\config\intune_policy_template.json",
-  [switch]$ValidateOnly
+  [switch]$ValidateOnly,
+  [switch]$PreviewPayload
 )
 
 function Ensure-Graph {
@@ -105,11 +110,10 @@ function Test-IntunePolicyTemplate {
   }
 }
 
-function NewOrUpdate-CompliancePolicy {
+function New-CompliancePolicyBody {
   param(
     [hashtable]$Template,
-    [string]$Platform,  # Windows10|Windows11|macOS|iOS|Android
-    [hashtable]$Existing
+    [string]$Platform  # Windows10|Windows11|macOS|iOS|Android
   )
 
   $baseName = $Template.policyName
@@ -134,6 +138,7 @@ function NewOrUpdate-CompliancePolicy {
         bitLockerEnabled                                  = $Template.complianceSettings.requireBitLocker
         codeIntegrityEnabled                              = $Template.complianceSettings.codeIntegrityEnabled
         secureBootEnabled                                 = $Template.complianceSettings.secureBootEnabled
+        storageRequireEncryption                          = $Template.complianceSettings.requireBitLocker
         deviceCompliancePolicyScriptResults               = @() # placeholder
       }
     }
@@ -142,29 +147,41 @@ function NewOrUpdate-CompliancePolicy {
       $settings = @{
         passwordRequired                    = $Template.complianceSettings.passwordRequired
         passwordMinimumLength               = $Template.complianceSettings.passwordMinimumLength
-        osMinimumVersion                    = "12.0" # adjust if needed
+        passwordExpirationDays              = $Template.complianceSettings.passwordExpirationDays
+        passwordPreviousPasswordBlockCount  = $Template.complianceSettings.passwordPreviousPasswordBlockCount
+        osMinimumVersion                    = $Template.complianceSettings.osMinimumVersion
+        osMaximumVersion                    = $Template.complianceSettings.osMaximumVersion
         systemIntegrityProtectionEnabled    = $true
-        gatekeeperEnabled                   = $true
+        storageRequireEncryption            = $Template.complianceSettings.requireBitLocker
         firewallEnabled                     = $Template.complianceSettings.firewallEnabled
+        deviceThreatProtectionRequiredSecurityLevel = $Template.complianceSettings.deviceThreatProtectionRequiredSecurityLevel
       }
     }
     'iOS' {
       $odata = "#microsoft.graph.iosCompliancePolicy"
       $settings = @{
-        passcodeRequired     = $Template.complianceSettings.passwordRequired
-        passcodeMinimumLength= $Template.complianceSettings.passwordMinimumLength
-        osMinimumVersion     = "15.0"
+        passcodeRequired                    = $Template.complianceSettings.passwordRequired
+        passcodeMinimumLength               = $Template.complianceSettings.passwordMinimumLength
+        passcodeExpirationDays              = $Template.complianceSettings.passwordExpirationDays
+        passcodePreviousPasscodeBlockCount  = $Template.complianceSettings.passwordPreviousPasswordBlockCount
+        osMinimumVersion                    = $Template.complianceSettings.osMinimumVersion
+        osMaximumVersion                    = $Template.complianceSettings.osMaximumVersion
         securityBlockJailbrokenDevices = $Template.complianceSettings.jailbreakDetectionEnabled
+        deviceThreatProtectionRequiredSecurityLevel = $Template.complianceSettings.deviceThreatProtectionRequiredSecurityLevel
       }
     }
     'Android' {
       $odata = "#microsoft.graph.androidCompliancePolicy"
       $settings = @{
-        passwordRequired     = $Template.complianceSettings.passwordRequired
-        passwordMinimumLength= $Template.complianceSettings.passwordMinimumLength
-        osMinimumVersion     = "11.0"
+        passwordRequired                    = $Template.complianceSettings.passwordRequired
+        passwordMinimumLength               = $Template.complianceSettings.passwordMinimumLength
+        passwordExpirationDays              = $Template.complianceSettings.passwordExpirationDays
+        passwordPreviousPasswordBlockCount  = $Template.complianceSettings.passwordPreviousPasswordBlockCount
+        osMinimumVersion                    = $Template.complianceSettings.osMinimumVersion
+        osMaximumVersion                    = $Template.complianceSettings.osMaximumVersion
         securityBlockJailbrokenDevices = $Template.complianceSettings.jailbreakDetectionEnabled
         storageRequireEncryption = $Template.complianceSettings.requireBitLocker
+        deviceThreatProtectionRequiredSecurityLevel = $Template.complianceSettings.deviceThreatProtectionRequiredSecurityLevel
       }
     }
     default { throw "Unsupported platform: $Platform" }
@@ -197,6 +214,20 @@ function NewOrUpdate-CompliancePolicy {
     )
   } + $settings
 
+  return $body
+}
+
+function NewOrUpdate-CompliancePolicy {
+  param(
+    [hashtable]$Template,
+    [string]$Platform,
+    [hashtable]$Existing
+  )
+
+  $baseName = $Template.policyName
+  $name = "$baseName - $Platform"
+  $body = New-CompliancePolicyBody -Template $Template -Platform $Platform
+
   if ($Existing) {
     $uri = "https://graph.microsoft.com/beta/deviceManagement/deviceCompliancePolicies/$($Existing.id)"
     if ($PSCmdlet.ShouldProcess($name, "Update Intune compliance policy")) {
@@ -219,6 +250,13 @@ Test-IntunePolicyTemplate -Template $template
 
 if ($ValidateOnly) {
   Write-Host "Template validation passed: $Path"
+  return
+}
+
+if ($PreviewPayload) {
+  foreach ($platform in $template.platforms) {
+    New-CompliancePolicyBody -Template $template -Platform $platform
+  }
   return
 }
 

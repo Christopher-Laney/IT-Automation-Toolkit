@@ -35,6 +35,14 @@ Use `-WhatIf` after validation to preview policy creation or updates:
   -WhatIf
 ```
 
+Use `-PreviewPayload` when you want to inspect the generated per-platform Graph bodies without connecting to Graph:
+
+```powershell
+.\scripts\compliance\apply_intune_policy.ps1 `
+  -Path .\config\intune_policy_examples\ios_compliance_policy.json `
+  -PreviewPayload
+```
+
 ## Deploy
 
 Connect with the required Microsoft Graph permissions, then run without `-WhatIf`:
@@ -100,5 +108,12 @@ Required `complianceSettings` fields:
 - `antivirusRequired`
 
 Optional sections such as `scope`, `deviceHealthAttestation`, `conditionalAccessIntegration`, `reporting`, and `metadata` are useful for documentation and future workflow expansion, but are not all mapped into the current Graph payload.
+
+The deployment script now maps platform-specific settings into each generated payload:
+
+- Windows: encryption, firewall, Secure Boot, code integrity, minimum and maximum OS version, and threat-protection level.
+- macOS: password history and expiry, minimum and maximum OS version, storage encryption, firewall, system integrity protection, and threat-protection level.
+- iOS: passcode history and expiry, minimum and maximum OS version, jailbreak blocking, and threat-protection level.
+- Android: password history and expiry, minimum and maximum OS version, encryption, rooted-device blocking, and threat-protection level.
 
 The JSON Schema intentionally allows additional compliance settings so new Intune payload fields can be documented before the deployment script maps them.

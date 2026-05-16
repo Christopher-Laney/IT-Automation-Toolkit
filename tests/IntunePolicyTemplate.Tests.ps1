@@ -102,4 +102,36 @@ Describe 'Intune policy template validation' {
             Pop-Location
         }
     }
+
+    It 'builds platform-specific preview payloads from template settings' {
+        $examplesPath = Join-Path $script:RepoRoot 'config/intune_policy_examples'
+        $windowsPath = Join-Path $examplesPath 'windows_compliance_policy.json'
+        $macPath = Join-Path $examplesPath 'macos_compliance_policy.json'
+        $iosPath = Join-Path $examplesPath 'ios_compliance_policy.json'
+        $androidPath = Join-Path $examplesPath 'android_compliance_policy.json'
+
+        $windowsPayloads = @(& $script:IntuneScript -Path $windowsPath -PreviewPayload)
+        $macPayload = @(& $script:IntuneScript -Path $macPath -PreviewPayload)[0]
+        $iosPayload = @(& $script:IntuneScript -Path $iosPath -PreviewPayload)[0]
+        $androidPayload = @(& $script:IntuneScript -Path $androidPath -PreviewPayload)[0]
+
+        $windowsPayloads | Should -HaveCount 2
+        $windowsPayloads[0].'@odata.type' | Should -Be '#microsoft.graph.windows10CompliancePolicy'
+        $windowsPayloads[0].storageRequireEncryption | Should -BeTrue
+
+        $macPayload.'@odata.type' | Should -Be '#microsoft.graph.macOSCompliancePolicy'
+        $macPayload.osMinimumVersion | Should -Be '12.0'
+        $macPayload.storageRequireEncryption | Should -BeFalse
+        $macPayload.passwordPreviousPasswordBlockCount | Should -Be 8
+
+        $iosPayload.'@odata.type' | Should -Be '#microsoft.graph.iosCompliancePolicy'
+        $iosPayload.osMinimumVersion | Should -Be '15.0'
+        $iosPayload.passcodeExpirationDays | Should -Be 0
+        $iosPayload.passcodePreviousPasscodeBlockCount | Should -Be 5
+
+        $androidPayload.'@odata.type' | Should -Be '#microsoft.graph.androidCompliancePolicy'
+        $androidPayload.osMinimumVersion | Should -Be '11.0'
+        $androidPayload.passwordPreviousPasswordBlockCount | Should -Be 5
+        $androidPayload.storageRequireEncryption | Should -BeTrue
+    }
 }
