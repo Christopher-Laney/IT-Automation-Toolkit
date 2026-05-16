@@ -2,4 +2,4 @@
 
 ## Compliance And Reporting
 
-- Add a sanitized Power BI `.pbit` template based on the sample CSV model.
+- Export a sanitized Power BI `.pbit` template from the included source pack.

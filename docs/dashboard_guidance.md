@@ -118,6 +118,7 @@ For demo data, use the matching files under `samples/reports`.
 If you add Power BI assets, prefer a sanitized `.pbit` template or documentation over a production `.pbix`.
 
 Use `dashboards/powerbi/README.md` as the starter source guide. It maps toolkit CSV outputs to Power BI tables, recommends report pages, and includes starter Power Query and DAX files.
+For the repeatable `.pbit` build sequence, use [powerbi_template_build.md](powerbi_template_build.md).
 
 Before committing Power BI files:
 

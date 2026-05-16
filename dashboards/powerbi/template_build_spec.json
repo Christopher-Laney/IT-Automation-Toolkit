@@ -1,0 +1,23 @@
+{
+  "templateName": "IT Automation Toolkit Sample Dashboard",
+  "sourceRootParameter": "ToolkitRoot",
+  "expectedTables": [
+    "InactiveUsers",
+    "LocalAdmins",
+    "IntuneCompliance",
+    "M365LicenseAudit",
+    "SslExpiry",
+    "SystemHealth"
+  ],
+  "recommendedPages": [
+    "Executive Overview",
+    "Identity Risk",
+    "Device And Compliance",
+    "License And Certificate Operations"
+  ],
+  "sourceAssets": [
+    "power_query_sample.m",
+    "measures.dax",
+    "theme.json"
+  ]
+}
