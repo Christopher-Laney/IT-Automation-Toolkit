@@ -112,6 +112,7 @@ end {
             -WebhookUrl $TeamsWebhook `
             -Title "IT Baseline Checks Completed" `
             -Message ('```' + $summary + '```') `
-            -Severity "Info"
+            -Severity "Info" `
+            -CardFormat "AdaptiveCard"
     }
 }

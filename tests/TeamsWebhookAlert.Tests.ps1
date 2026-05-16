@@ -4,7 +4,7 @@ Describe 'Teams webhook alert sender' {
         $script:TeamsAlertScript = Join-Path $script:RepoRoot 'scripts/notifications/teams_webhook_alert.ps1'
     }
 
-    It 'builds a warning payload and posts it as JSON' {
+    It 'builds a default MessageCard payload and posts it as JSON' {
         Mock Invoke-RestMethod {}
 
         $payload = & $script:TeamsAlertScript `
@@ -24,6 +24,30 @@ Describe 'Teams webhook alert sender' {
             $Uri -eq 'https://example.test/webhook' -and
             $ContentType -eq 'application/json' -and
             (($Body | ConvertFrom-Json).themeColor -eq 'FFC300')
+        }
+    }
+
+    It 'builds an AdaptiveCard payload for high-signal alerts' {
+        Mock Invoke-RestMethod {}
+
+        $payload = & $script:TeamsAlertScript `
+            -WebhookUrl 'https://example.test/webhook' `
+            -Title 'Baseline Completed' `
+            -Message 'All checks completed.' `
+            -Severity Critical `
+            -CardFormat AdaptiveCard `
+            -PassThru
+
+        $payload.type | Should -Be 'message'
+        $payload.attachments[0].contentType | Should -Be 'application/vnd.microsoft.card.adaptive'
+        $payload.attachments[0].content.type | Should -Be 'AdaptiveCard'
+        $payload.attachments[0].content.body[0].text | Should -Be 'Baseline Completed'
+        $payload.attachments[0].content.body[0].color | Should -Be 'Attention'
+        $payload.attachments[0].content.body[2].facts[0].value | Should -Be 'Critical'
+
+        Should -Invoke Invoke-RestMethod -Times 1 -Exactly -ParameterFilter {
+            (($Body | ConvertFrom-Json).attachments[0].content.type -eq 'AdaptiveCard') -and
+            (($Body | ConvertFrom-Json).attachments[0].content.body[0].color -eq 'Attention')
         }
     }
 
