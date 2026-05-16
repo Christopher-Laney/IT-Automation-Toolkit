@@ -41,6 +41,13 @@
   Path to a file containing a base64-encoded 16, 24, or 32 byte AES key used
   to encrypt temporary passwords in the handoff artifact.
 
+.PARAMETER ApprovalRecordPath
+  Optional path to a JSON approval record. Required when the batch requests
+  license assignment or privileged group membership.
+
+.PARAMETER PrivilegedGroupNames
+  Group names that require explicit approval before onboarding can continue.
+
 .PARAMETER ValidateOnly
   Validate CSV headers and row values, then exit before connecting to Microsoft Graph.
 
@@ -59,15 +66,17 @@
   (For very strict tenants, add "Directory.Read.All" as needed.)
 
 .EXAMPLE
-  .\onboarding.ps1 -UserList .\config\new_users.csv -ValidateOnly
+  .\onboarding.ps1 -UserList .\config\new_users.csv -ApprovalRecordPath .\config\approval_record.sample.json -ValidateOnly
 
 .EXAMPLE
   .\onboarding.ps1 -UserList .\config\new_users.csv -SetTempPassword `
+    -ApprovalRecordPath .\config\approval_record.sample.json `
     -MfaGroup "MFA-Users" -IntuneEnrollmentGroup "Intune-AutoEnroll" `
     -ReportPath .\logs\onboarding_run.csv -WhatIf
 
 .EXAMPLE
-  .\onboarding.ps1 -UserList .\config\new_users.csv -DefaultUsageLocation US -SetTempPassword
+  .\onboarding.ps1 -UserList .\config\new_users.csv -DefaultUsageLocation US -SetTempPassword `
+    -ApprovalRecordPath .\config\approval_record.sample.json
 #>
 
 [CmdletBinding(SupportsShouldProcess=$true)]
@@ -79,6 +88,8 @@ param(
   [switch]$IncludeTemporaryPasswordInReport,
   [string]$TemporaryPasswordHandoffPath,
   [string]$TemporaryPasswordKeyPath,
+  [string]$ApprovalRecordPath,
+  [string[]]$PrivilegedGroupNames,
   [switch]$ValidateOnly,
   [string]$MfaGroup,
   [string]$IntuneEnrollmentGroup,
@@ -322,6 +333,76 @@ function Test-UserRow {
   }
 }
 
+function Import-ApprovalRecord {
+  param([Parameter(Mandatory=$true)][string]$Path)
+
+  if (-not (Test-Path $Path)) {
+    throw "Approval record not found: $Path"
+  }
+
+  try {
+    $record = Get-Content -Raw -Path $Path | ConvertFrom-Json -ErrorAction Stop
+  } catch {
+    throw "Approval record must be valid JSON."
+  }
+
+  if (-not $record.ticketId) { throw "Approval record must include ticketId." }
+  if (-not $record.approvedBy) { throw "Approval record must include approvedBy." }
+  if (-not $record.approvedActions) { throw "Approval record must include approvedActions." }
+  if ($record.expiresUtc -and ([datetime]$record.expiresUtc).ToUniversalTime() -lt (Get-Date).ToUniversalTime()) {
+    throw "Approval record is expired."
+  }
+
+  return $record
+}
+
+function Assert-ApprovedActions {
+  param(
+    [string[]]$RequiredActions,
+    [object]$ApprovalRecord
+  )
+
+  if (-not $RequiredActions -or $RequiredActions.Count -eq 0) { return }
+  if (-not $ApprovalRecord) {
+    throw "ApprovalRecordPath is required for action(s): $($RequiredActions -join ', ')."
+  }
+
+  $approved = @($ApprovalRecord.approvedActions | ForEach-Object { $_.ToString().ToLowerInvariant() })
+  $missing = $RequiredActions | Where-Object { $approved -notcontains $_.ToLowerInvariant() }
+  if ($missing) {
+    throw "Approval record is missing approved action(s): $($missing -join ', ')."
+  }
+}
+
+function Get-OnboardingApprovalActions {
+  param(
+    [Parameter(Mandatory=$true)][object[]]$Rows,
+    [string[]]$PrivilegedGroupNames,
+    [string]$MfaGroup,
+    [string]$IntuneEnrollmentGroup
+  )
+
+  $required = @()
+  if ($Rows | Where-Object { (Split-List $_.LicenseSku).Count -gt 0 }) {
+    $required += 'LicenseAssignment'
+  }
+
+  $privilegedLookup = @($PrivilegedGroupNames | Where-Object { $_ } | ForEach-Object { $_.ToLowerInvariant() })
+  if ($privilegedLookup.Count -gt 0) {
+    foreach ($row in $Rows) {
+      $requestedGroups = @(Split-List $row.Groups)
+      if ($MfaGroup) { $requestedGroups += $MfaGroup }
+      if ($IntuneEnrollmentGroup) { $requestedGroups += $IntuneEnrollmentGroup }
+      if ($requestedGroups | Where-Object { $privilegedLookup -contains $_.ToLowerInvariant() }) {
+        $required += 'PrivilegedGroupMembership'
+        break
+      }
+    }
+  }
+
+  return @($required | Select-Object -Unique)
+}
+
 # ----------------- main -----------------
 try {
   if (-not (Test-Path $UserList)) { throw "CSV not found: $UserList" }
@@ -344,6 +425,14 @@ try {
   } else {
     $null
   }
+
+  $requiredApprovalActions = Get-OnboardingApprovalActions `
+    -Rows $rows `
+    -PrivilegedGroupNames $PrivilegedGroupNames `
+    -MfaGroup $MfaGroup `
+    -IntuneEnrollmentGroup $IntuneEnrollmentGroup
+  $approvalRecord = if ($ApprovalRecordPath) { Import-ApprovalRecord -Path $ApprovalRecordPath } else { $null }
+  Assert-ApprovedActions -RequiredActions $requiredApprovalActions -ApprovalRecord $approvalRecord
 
   if ($ValidateOnly) {
     Write-Host "CSV validation passed: $(@($rows).Count) user row(s)."

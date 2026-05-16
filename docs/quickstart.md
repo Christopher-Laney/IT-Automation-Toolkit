@@ -28,18 +28,19 @@ No output means no parser errors were found.
 Validate the CSV before connecting to Microsoft Graph:
 
 ```powershell
-.\scripts\identity\onboarding.ps1 -UserList .\config\new_users.csv -ValidateOnly
+.\scripts\identity\onboarding.ps1 -UserList .\config\new_users.csv -ApprovalRecordPath .\config\approval_record.sample.json -ValidateOnly
 ```
 
 Then preview tenant changes with `-WhatIf`:
 
 ```powershell
-.\scripts\identity\onboarding.ps1 -UserList .\config\new_users.csv -WhatIf
+.\scripts\identity\onboarding.ps1 -UserList .\config\new_users.csv -ApprovalRecordPath .\config\approval_record.sample.json -WhatIf
 ```
 
 Review the proposed changes before running without `-WhatIf`.
 Generated temporary passwords are omitted from the normal report output by default. For a controlled encrypted handoff path, see [onboarding_password_handoff.md](onboarding_password_handoff.md).
 After a live onboarding batch, [identity_change_artifacts.md](identity_change_artifacts.md) shows how to turn the run report into a reviewable rollback ledger.
+Approval-gated identity changes are documented in [identity_approval_gates.md](identity_approval_gates.md).
 
 ## 4. Prepare Optional Server Checks
 

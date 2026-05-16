@@ -3,7 +3,6 @@
 ## Identity Automation
 
 - Add ServiceNow or Jira ticket intake for onboarding and offboarding.
-- Add approval gates for license assignment, privileged groups, and destructive offboarding actions.
 
 ## Compliance And Reporting
 

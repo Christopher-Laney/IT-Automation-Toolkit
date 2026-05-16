@@ -12,6 +12,7 @@ The CSV report is useful for humans, but a structured artifact is easier to arch
 ```powershell
 .\scripts\identity\onboarding.ps1 `
   -UserList .\config\new_users.csv `
+  -ApprovalRecordPath .\config\approval_record.sample.json `
   -ReportPath .\logs\onboarding_run.csv
 
 .\scripts\identity\export_identity_change_artifact.ps1 `

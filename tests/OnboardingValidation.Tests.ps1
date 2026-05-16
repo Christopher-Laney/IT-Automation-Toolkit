@@ -2,6 +2,7 @@ Describe 'Onboarding CSV validation' {
     BeforeAll {
         $script:RepoRoot = Split-Path -Parent $PSScriptRoot
         $script:OnboardingScript = Join-Path $script:RepoRoot 'scripts/identity/onboarding.ps1'
+        $script:ApprovalRecordPath = Join-Path $script:RepoRoot 'config/approval_record.sample.json'
     }
 
     It 'validates the sample onboarding CSV without connecting to Graph' {
@@ -9,7 +10,7 @@ Describe 'Onboarding CSV validation' {
 
         Push-Location $script:RepoRoot
         try {
-            $output = & $script:OnboardingScript -UserList $csvPath -ValidateOnly 6>&1
+            $output = & $script:OnboardingScript -UserList $csvPath -ApprovalRecordPath $script:ApprovalRecordPath -ValidateOnly 6>&1
         } finally {
             Pop-Location
         }
@@ -48,7 +49,7 @@ DisplayName,UserPrincipalName,UsageLocation,LicenseSku,Groups
 Jane Doe,jane.doe@contoso.com,,ENTERPRISEPACK,All-Employees
 '@ | Set-Content -Path $csvPath -Encoding UTF8
 
-        $output = & $script:OnboardingScript -UserList $csvPath -DefaultUsageLocation US -ValidateOnly 6>&1
+        $output = & $script:OnboardingScript -UserList $csvPath -DefaultUsageLocation US -ApprovalRecordPath $script:ApprovalRecordPath -ValidateOnly 6>&1
 
         ($output | Out-String) | Should -Match 'CSV validation passed: 1 user row\(s\)'
     }
@@ -60,6 +61,7 @@ Jane Doe,jane.doe@contoso.com,,ENTERPRISEPACK,All-Employees
             & $script:OnboardingScript `
                 -UserList $csvPath `
                 -TemporaryPasswordHandoffPath (Join-Path $TestDrive 'handoff.json') `
+                -ApprovalRecordPath $script:ApprovalRecordPath `
                 -ValidateOnly
         } | Should -Throw '*TemporaryPasswordHandoffPath and TemporaryPasswordKeyPath must be provided together*'
     }
@@ -74,6 +76,7 @@ Jane Doe,jane.doe@contoso.com,,ENTERPRISEPACK,All-Employees
                 -UserList $csvPath `
                 -TemporaryPasswordHandoffPath (Join-Path $TestDrive 'handoff.json') `
                 -TemporaryPasswordKeyPath $invalidKeyPath `
+                -ApprovalRecordPath $script:ApprovalRecordPath `
                 -ValidateOnly
         } | Should -Throw '*must contain a base64-encoded AES key*'
     }
@@ -87,6 +90,7 @@ Jane Doe,jane.doe@contoso.com,,ENTERPRISEPACK,All-Employees
             -UserList $csvPath `
             -TemporaryPasswordHandoffPath (Join-Path $TestDrive 'handoff.json') `
             -TemporaryPasswordKeyPath $keyPath `
+            -ApprovalRecordPath $script:ApprovalRecordPath `
             -ValidateOnly 6>&1
 
         ($output | Out-String) | Should -Match 'CSV validation passed: 2 user row\(s\)'
