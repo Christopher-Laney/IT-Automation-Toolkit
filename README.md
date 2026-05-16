@@ -100,6 +100,7 @@ Power BI starter source notes, Power Query snippets, and DAX measures live under
 For scheduled execution examples across Task Scheduler, Azure Automation, and GitHub Actions, see [docs/scheduling.md](docs/scheduling.md).
 For Azure DevOps CI and scheduled reporting starters, see [docs/azure_devops_pipelines.md](docs/azure_devops_pipelines.md).
 For Teams and Slack webhook usage examples, see [docs/notifications.md](docs/notifications.md).
+For encrypted onboarding credential handoff guidance, see [docs/onboarding_password_handoff.md](docs/onboarding_password_handoff.md).
 
 To exercise the master baseline runner without tenant credentials or server access, use:
 

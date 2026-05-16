@@ -52,4 +52,43 @@ Jane Doe,jane.doe@contoso.com,,ENTERPRISEPACK,All-Employees
 
         ($output | Out-String) | Should -Match 'CSV validation passed: 1 user row\(s\)'
     }
+
+    It 'requires temporary-password handoff path and key path together' {
+        $csvPath = Join-Path $script:RepoRoot 'config/new_users.csv'
+
+        {
+            & $script:OnboardingScript `
+                -UserList $csvPath `
+                -TemporaryPasswordHandoffPath (Join-Path $TestDrive 'handoff.json') `
+                -ValidateOnly
+        } | Should -Throw '*TemporaryPasswordHandoffPath and TemporaryPasswordKeyPath must be provided together*'
+    }
+
+    It 'validates temporary-password handoff key files before Graph calls' {
+        $csvPath = Join-Path $script:RepoRoot 'config/new_users.csv'
+        $invalidKeyPath = Join-Path $TestDrive 'invalid.key'
+        Set-Content -Path $invalidKeyPath -Value 'not-base64' -Encoding UTF8
+
+        {
+            & $script:OnboardingScript `
+                -UserList $csvPath `
+                -TemporaryPasswordHandoffPath (Join-Path $TestDrive 'handoff.json') `
+                -TemporaryPasswordKeyPath $invalidKeyPath `
+                -ValidateOnly
+        } | Should -Throw '*must contain a base64-encoded AES key*'
+    }
+
+    It 'accepts valid temporary-password handoff key files during validation' {
+        $csvPath = Join-Path $script:RepoRoot 'config/new_users.csv'
+        $keyPath = Join-Path $TestDrive 'handoff.key'
+        [Convert]::ToBase64String([byte[]](1..32)) | Set-Content -Path $keyPath -Encoding UTF8
+
+        $output = & $script:OnboardingScript `
+            -UserList $csvPath `
+            -TemporaryPasswordHandoffPath (Join-Path $TestDrive 'handoff.json') `
+            -TemporaryPasswordKeyPath $keyPath `
+            -ValidateOnly 6>&1
+
+        ($output | Out-String) | Should -Match 'CSV validation passed: 2 user row\(s\)'
+    }
 }

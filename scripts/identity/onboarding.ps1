@@ -33,6 +33,14 @@
 .PARAMETER IncludeTemporaryPasswordInReport
   If set, includes generated temporary passwords in the report CSV. Disabled by default to avoid writing secrets to plain text output.
 
+.PARAMETER TemporaryPasswordHandoffPath
+  Optional JSON path for an encrypted temporary-password handoff artifact.
+  Requires TemporaryPasswordKeyPath.
+
+.PARAMETER TemporaryPasswordKeyPath
+  Path to a file containing a base64-encoded 16, 24, or 32 byte AES key used
+  to encrypt temporary passwords in the handoff artifact.
+
 .PARAMETER ValidateOnly
   Validate CSV headers and row values, then exit before connecting to Microsoft Graph.
 
@@ -69,6 +77,8 @@ param(
   [int]$DefaultPasswordLength = 16,
   [switch]$SetTempPassword,
   [switch]$IncludeTemporaryPasswordInReport,
+  [string]$TemporaryPasswordHandoffPath,
+  [string]$TemporaryPasswordKeyPath,
   [switch]$ValidateOnly,
   [string]$MfaGroup,
   [string]$IntuneEnrollmentGroup,
@@ -226,6 +236,52 @@ function Ensure-ReportDir($path) {
   if ($dir -and -not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir | Out-Null }
 }
 
+function Get-TemporaryPasswordKey {
+  param([Parameter(Mandatory=$true)][string]$Path)
+
+  if (-not (Test-Path $Path)) {
+    throw "Temporary password key file not found: $Path"
+  }
+
+  try {
+    $key = [Convert]::FromBase64String((Get-Content -Raw -Path $Path).Trim())
+  } catch {
+    throw "Temporary password key file must contain a base64-encoded AES key."
+  }
+
+  if (@(16,24,32) -notcontains $key.Length) {
+    throw "Temporary password key must decode to 16, 24, or 32 bytes."
+  }
+
+  return [byte[]]$key
+}
+
+function Export-TemporaryPasswordHandoff {
+  param(
+    [Parameter(Mandatory=$true)][object[]]$Entries,
+    [Parameter(Mandatory=$true)][string]$Path,
+    [Parameter(Mandatory=$true)][byte[]]$Key
+  )
+
+  Ensure-ReportDir $Path
+  $artifact = [pscustomobject]@{
+    createdUtc = (Get-Date).ToUniversalTime().ToString('o')
+    encryption = 'ConvertFrom-SecureString AES'
+    entries    = @(
+      foreach ($entry in $Entries) {
+        [pscustomobject]@{
+          userPrincipalName = $entry.UserPrincipalName
+          encryptedPassword = ConvertFrom-SecureString `
+            -SecureString (ConvertTo-SecureString $entry.TempPassword -AsPlainText -Force) `
+            -Key $Key
+        }
+      }
+    )
+  }
+
+  $artifact | ConvertTo-Json -Depth 5 | Set-Content -Path $Path -Encoding UTF8
+}
+
 function Test-RequiredCsvHeaders {
   param(
     [Parameter(Mandatory=$true)][object[]]$Rows,
@@ -278,6 +334,17 @@ try {
     Test-UserRow -Row $row -RowNumber $validationRowNumber -DefaultUsageLocation $DefaultUsageLocation
   }
 
+  if (($TemporaryPasswordHandoffPath -and -not $TemporaryPasswordKeyPath) -or
+      ($TemporaryPasswordKeyPath -and -not $TemporaryPasswordHandoffPath)) {
+    throw "TemporaryPasswordHandoffPath and TemporaryPasswordKeyPath must be provided together."
+  }
+
+  $temporaryPasswordKey = if ($TemporaryPasswordKeyPath) {
+    Get-TemporaryPasswordKey -Path $TemporaryPasswordKeyPath
+  } else {
+    $null
+  }
+
   if ($ValidateOnly) {
     Write-Host "CSV validation passed: $(@($rows).Count) user row(s)."
     return
@@ -290,6 +357,7 @@ try {
   $intuneGroupId = if ($IntuneEnrollmentGroup) { Resolve-GroupId -NameOrId $IntuneEnrollmentGroup } else { $null }
 
   $report = @()
+  $temporaryPasswordHandoff = @()
 
   foreach ($u in $rows) {
     $upn = $u.UserPrincipalName
@@ -338,6 +406,12 @@ try {
         UsageLocation   = ( if ($u.UsageLocation) { $u.UsageLocation } else { $DefaultUsageLocation } )
         Notes           = if ($pwd -and -not $IncludeTemporaryPasswordInReport) { "Temporary password generated but omitted from report." } else { "" }
       }
+      if ($pwd -and $TemporaryPasswordHandoffPath) {
+        $temporaryPasswordHandoff += [pscustomobject]@{
+          UserPrincipalName = $upn
+          TempPassword      = $pwd
+        }
+      }
       Write-Host "✔ $($upn): $action; Licenses=$licenseStatus; GroupsAdded=[$($groupsAdded -join ', ')]"
     }
     catch {
@@ -363,6 +437,14 @@ try {
     Ensure-ReportDir $ReportPath
     $report | Export-Csv -Path $ReportPath -NoTypeInformation -Encoding UTF8
     Write-Host "Run report written to $ReportPath"
+  }
+
+  if ($TemporaryPasswordHandoffPath -and $temporaryPasswordHandoff.Count -gt 0) {
+    Export-TemporaryPasswordHandoff `
+      -Entries $temporaryPasswordHandoff `
+      -Path $TemporaryPasswordHandoffPath `
+      -Key $temporaryPasswordKey
+    Write-Host "Encrypted temporary password handoff written to $TemporaryPasswordHandoffPath"
   }
 
   Write-Host "Onboarding complete."

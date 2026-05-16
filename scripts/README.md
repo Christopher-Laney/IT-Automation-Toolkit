@@ -47,6 +47,9 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 # Run a weekly security baseline
 .\automation\invoke_it_baseline_checks.ps1 -RunCompliance -RunOps
 
+# Run onboarding with an encrypted temporary-password handoff artifact
+.\identity\onboarding.ps1 -UserList ..\config\new_users.csv -SetTempPassword -TemporaryPasswordHandoffPath ..\logs\onboarding_password_handoff.json -TemporaryPasswordKeyPath ..\logs\onboarding-handoff.key
+
 # Generate dashboard after reports exist
 .\reporting\generate_it_audit_dashboard.ps1
 

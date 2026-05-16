@@ -38,7 +38,7 @@ Then preview tenant changes with `-WhatIf`:
 ```
 
 Review the proposed changes before running without `-WhatIf`.
-Generated temporary passwords are omitted from the normal report output by default. Use `-IncludeTemporaryPasswordInReport` only for controlled demos or a secure handoff process.
+Generated temporary passwords are omitted from the normal report output by default. For a controlled encrypted handoff path, see [onboarding_password_handoff.md](onboarding_password_handoff.md).
 
 ## 4. Prepare Optional Server Checks
 
