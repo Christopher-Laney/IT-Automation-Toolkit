@@ -105,6 +105,7 @@ For encrypted onboarding credential handoff guidance, see [docs/onboarding_passw
 For onboarding audit and rollback artifacts, see [docs/identity_change_artifacts.md](docs/identity_change_artifacts.md).
 For approval-gated onboarding and offboarding, see [docs/identity_approval_gates.md](docs/identity_approval_gates.md).
 For exported ServiceNow and Jira ticket intake examples, see [docs/identity_ticket_intake.md](docs/identity_ticket_intake.md).
+For reviewable audit bundles that tie those identity inputs together, see [docs/identity_change_packets.md](docs/identity_change_packets.md).
 
 To exercise the master baseline runner without tenant credentials or server access, use:
 
