@@ -12,6 +12,7 @@ To refresh the sanitized markdown transcript after running the walkthrough, use:
 
 ## What This Demonstrates
 
+- End-to-end identity intake, approval, and audit packet generation.
 - CSV validation before onboarding users.
 - Intune template validation before Graph deployment.
 - Dashboard generation from sanitized sample data.
@@ -46,7 +47,18 @@ Get-ChildItem .\scripts,.\tests -Recurse -Filter *.ps1 | ForEach-Object {
 
 Expected result: no output.
 
-## 2. Validate Onboarding Input
+## 2. Run The Identity Workflow Demo
+
+Run the sanitized identity workflow from ticket intake through review packet export:
+
+```powershell
+.\scripts\identity\invoke_identity_workflow_demo.ps1 `
+  -OutputDirectory .\reports\identity-demo
+```
+
+Expected result: `reports/identity-demo/onboarding_from_ticket.csv` and `reports/identity-demo/identity_change_packet.json` are created without connecting to Microsoft Graph.
+
+## 3. Validate Onboarding Input
 
 Validate the sample onboarding CSV without connecting to Microsoft Graph:
 
@@ -59,7 +71,7 @@ Validate the sample onboarding CSV without connecting to Microsoft Graph:
 
 Expected result: `CSV validation passed`.
 
-## 3. Validate Intune Templates
+## 4. Validate Intune Templates
 
 Validate the canonical Intune template:
 
@@ -79,7 +91,7 @@ Validate one platform-specific example:
 
 Expected result: `Template validation passed`.
 
-## 4. Generate A Sample Dashboard
+## 5. Generate A Sample Dashboard
 
 Generate an HTML dashboard from sanitized sample CSVs:
 
@@ -103,7 +115,7 @@ You can run the same sample dashboard through the baseline orchestrator:
 
 Expected result: the baseline summary reports that a sample IT audit dashboard was generated from sanitized reports.
 
-## 5. Preview Backup Safety
+## 6. Preview Backup Safety
 
 Run a backup preview. Replace paths with local demo folders if needed:
 
@@ -124,7 +136,7 @@ Review the sanitized manifest example:
 Get-Content .\samples\backups\backup-20260514-000000-sample.json
 ```
 
-## 6. Optional Full Local Tests
+## 7. Optional Full Local Tests
 
 Install local test tools only if you want to run the full suite outside GitHub Actions:
 
@@ -144,6 +156,7 @@ Invoke-ScriptAnalyzer -Path .\scripts -Recurse -Settings .\PSScriptAnalyzerSetti
 ## Where To Go Next
 
 - Refresh `docs/demo_transcript.md` when you want an updated shareable record of the walkthrough.
+- Read `docs/identity_workflow_demo.md` for the focused end-to-end identity storyline.
 - Read `docs/quickstart.md` for a broader local walkthrough.
 - Read `docs/scheduling.md` for Task Scheduler, Azure Automation, and GitHub Actions examples.
 - Read `docs/backup_restore.md` before running real backups or restores.

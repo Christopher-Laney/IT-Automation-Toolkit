@@ -1,0 +1,9 @@
+{
+  "ticketId": "RITM0012345",
+  "approvedBy": "it-manager@contoso.com",
+  "approvedUtc": "2030-01-10T18:30:00Z",
+  "expiresUtc": "2030-01-11T18:30:00Z",
+  "approvedActions": [
+    "LicenseAssignment"
+  ]
+}
