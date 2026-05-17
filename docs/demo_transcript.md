@@ -2,7 +2,7 @@
 
 Generated from the safe no-tenant walkthrough in `docs/demo_guide.md`.
 
-Generated UTC: 2026-05-15
+Generated UTC: 2026-05-17
 
 ## Validate Repository Syntax
 
@@ -55,8 +55,9 @@ Sample IT audit dashboard generated from sanitized reports.
 
 ```text
 [<timestamp>] [INFO] Starting backup: Source='./samples' Dest='./reports/backup-demo' Tag='' RetentionDays=14
-[<timestamp>] [INFO] Files selected: 10
+[<timestamp>] [INFO] Files selected: 12
 [<timestamp>] [INFO] Archive was not created. Skipping encryption, manifest, upload, and notification steps.
 Backup preview complete:
   Planned ZIP: ./reports/backup-demo/backup-<timestamp>.zip
 ```
+

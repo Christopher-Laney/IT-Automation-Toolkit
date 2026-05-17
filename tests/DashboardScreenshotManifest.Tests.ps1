@@ -22,6 +22,39 @@ Describe 'Dashboard screenshot manifest' {
         @($manifest.sampleInputs.sha256 | Where-Object { $_ }) | Should -HaveCount 6
     }
 
+    It 'normalizes text fingerprints across line endings' {
+        $lfPath = Join-Path $TestDrive 'sample-lf.csv'
+        $crlfPath = Join-Path $TestDrive 'sample-crlf.csv'
+        "Header`nValue`n" | Set-Content -NoNewline -Path $lfPath
+        "Header`r`nValue`r`n" | Set-Content -NoNewline -Path $crlfPath
+
+        $configPath = Join-Path $TestDrive 'line-ending-dashboard-config.json'
+        @{
+            reports = @(
+                @{
+                    title = 'LF'
+                    path  = $lfPath
+                },
+                @{
+                    title = 'CRLF'
+                    path  = $crlfPath
+                }
+            )
+        } | ConvertTo-Json -Depth 4 | Set-Content -Path $configPath
+
+        Push-Location $script:RepoRoot
+        try {
+            $manifest = & $script:ManifestScript `
+                -ConfigPath $configPath `
+                -OutputPath (Join-Path $TestDrive 'line-ending-manifest.json') `
+                -PassThru
+        } finally {
+            Pop-Location
+        }
+
+        @($manifest.sampleInputs.sha256 | Select-Object -Unique) | Should -HaveCount 1
+    }
+
     It 'rejects configs that omit report paths' {
         $configPath = Join-Path $TestDrive 'broken_dashboard_config.json'
         @{

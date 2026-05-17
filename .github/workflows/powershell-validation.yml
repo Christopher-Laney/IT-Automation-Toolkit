@@ -29,6 +29,10 @@ jobs:
         shell: pwsh
         run: Invoke-Pester -Path ./tests -CI
 
+      - name: Verify generated artifacts
+        shell: pwsh
+        run: ./scripts/reporting/test_generated_artifacts.ps1
+
       - name: Run script analyzer
         shell: pwsh
         run: Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Settings ./PSScriptAnalyzerSettings.psd1 -Severity Error

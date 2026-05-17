@@ -25,6 +25,7 @@ When available, also run:
 
 ```powershell
 Invoke-Pester -Path .\tests -CI
+.\scripts\reporting\test_generated_artifacts.ps1
 Invoke-ScriptAnalyzer -Path .\scripts -Recurse -Severity Error
 ```
 

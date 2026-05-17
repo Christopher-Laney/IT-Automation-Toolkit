@@ -31,6 +31,7 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 |  | m365_license_audit.ps1 | License usage + missing allocation. | Weekly / Monthly |
 |  | ssl_certificate_expiry_report.ps1 | Cert age/status monitoring. | Weekly / Monthly |
 |  | generate_it_audit_dashboard.ps1 | Build HTML dashboard of reports. | Weekly / Monthly |
+|  | test_generated_artifacts.ps1 | Verify committed generated docs and manifests are fresh. | Before PR / CI |
 |  | update_dashboard_screenshot_manifest.ps1 | Record sample screenshot source hashes. | After screenshot refresh |
 |  | system_health_report.ps1 | CPU/RAM/Disk status snapshot. | Daily / Weekly |
 |  | local_admin_audit.ps1 | List local admins (security). | Monthly / Audits |
@@ -88,6 +89,9 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 
 # Generate a sanitized transcript of the no-tenant demo walkthrough
 .\reporting\generate_demo_transcript.ps1 -OutputPath ..\docs\demo_transcript.md
+
+# Verify committed generated docs and manifests still match their source inputs
+.\reporting\test_generated_artifacts.ps1
 
 # Preview a Teams alert payload without sending it
 .\notifications\teams_webhook_alert.ps1 -WebhookUrl "https://example.invalid/webhook" -Title "Backup Warning" -Message "Preview only." -Severity Warning -WhatIf -PassThru

@@ -20,6 +20,7 @@ From the repository root:
 
 ```powershell
 Invoke-Pester -Path .\tests -CI
+.\scripts\reporting\test_generated_artifacts.ps1
 Invoke-ScriptAnalyzer -Path .\scripts -Recurse -Settings .\PSScriptAnalyzerSettings.psd1 -Severity Error
 ```
 
@@ -79,6 +80,7 @@ It runs on the `windows-2025-vs2026` hosted image so validation matches the Wind
 The workflow uses read-only repository permissions and runs:
 
 - `Invoke-Pester -Path ./tests -CI`
+- `./scripts/reporting/test_generated_artifacts.ps1`
 - `Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Settings ./PSScriptAnalyzerSettings.psd1 -Severity Error`
 
 Organizations that standardize on Azure DevOps can start from `samples/pipelines/azure-devops-validation.yml`.

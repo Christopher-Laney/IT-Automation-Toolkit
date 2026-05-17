@@ -52,10 +52,23 @@ function Get-FileFingerprint {
         throw "Required file not found: $Path"
     }
 
-    $hash = Get-FileHash -Path $Path -Algorithm SHA256
+    $extension = [System.IO.Path]::GetExtension($Path)
+    if ($extension -in @('.csv', '.json')) {
+        $normalizedText = (Get-Content -Raw -Path $Path) -replace "`r`n", "`n"
+        $bytes = [System.Text.Encoding]::UTF8.GetBytes($normalizedText)
+        $algorithm = [System.Security.Cryptography.SHA256]::Create()
+        try {
+            $hashValue = ([System.BitConverter]::ToString($algorithm.ComputeHash($bytes))).Replace('-', '')
+        } finally {
+            $algorithm.Dispose()
+        }
+    } else {
+        $hashValue = (Get-FileHash -Path $Path -Algorithm SHA256).Hash
+    }
+
     [pscustomobject]@{
         path   = Get-RelativePath -Path $Path
-        sha256 = $hash.Hash
+        sha256 = $hashValue
     }
 }
 
