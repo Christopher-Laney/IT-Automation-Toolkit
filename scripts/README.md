@@ -27,6 +27,7 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 |  | apply_intune_policy.ps1 | Validate and apply Intune policy from template. | On-demand / Change mgmt |
 |  | set_conditional_access_policy.ps1 | Deploy Conditional Access rules. | On-demand / Security rollout |
 | **Reporting** | inventory_report.ps1 | Installed software export. | Monthly |
+|  | export_workflow_catalog.ps1 | Render workflow catalog markdown. | On-demand / Docs refresh |
 |  | m365_license_audit.ps1 | License usage + missing allocation. | Weekly / Monthly |
 |  | ssl_certificate_expiry_report.ps1 | Cert age/status monitoring. | Weekly / Monthly |
 |  | generate_it_audit_dashboard.ps1 | Build HTML dashboard of reports. | Weekly / Monthly |
@@ -78,6 +79,9 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 
 # Generate dashboard after reports exist
 .\reporting\generate_it_audit_dashboard.ps1
+
+# Refresh the workflow operations matrix from the catalog JSON
+.\reporting\export_workflow_catalog.ps1
 
 # Refresh the committed screenshot manifest after updating the sample dashboard image
 .\reporting\update_dashboard_screenshot_manifest.ps1
