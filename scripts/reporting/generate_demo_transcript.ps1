@@ -9,13 +9,17 @@
 .PARAMETER OutputPath
   Markdown file to generate.
 
+.PARAMETER GeneratedUtcDate
+  UTC date string to include in the transcript header. Defaults to the current UTC date.
+
 .EXAMPLE
   .\scripts\reporting\generate_demo_transcript.ps1 -OutputPath .\reports\demo_transcript.md
 #>
 
 [CmdletBinding()]
 param(
-    [string]$OutputPath = ".\reports\demo_transcript.md"
+    [string]$OutputPath = ".\reports\demo_transcript.md",
+    [string]$GeneratedUtcDate = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd')
 )
 
 begin {
@@ -118,7 +122,7 @@ end {
         ''
         'Generated from the safe no-tenant walkthrough in `docs/demo_guide.md`.'
         ''
-        "Generated UTC: $((Get-Date).ToUniversalTime().ToString('yyyy-MM-dd'))"
+        "Generated UTC: $GeneratedUtcDate"
         ''
     )
 
