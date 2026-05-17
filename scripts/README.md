@@ -14,6 +14,7 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 | **Identity** | onboarding.ps1 | Create new users from CSV. | On-demand |
 |  | convert_identity_ticket.ps1 | Convert exported ServiceNow/Jira tickets into workflow inputs. | On-demand |
 |  | export_identity_change_packet.ps1 | Bundle ticket, approval, and evidence fingerprints. | After change review |
+|  | invoke_identity_workflow_demo.ps1 | Run a safe end-to-end identity workflow demo. | Demo / Portfolio |
 |  | export_identity_change_artifact.ps1 | Build rollback-oriented onboarding artifacts. | After onboarding runs |
 |  | offboarding.ps1 | Disable accounts & revoke sessions. | On-demand |
 |  | inactive_user_report.ps1 | Find inactive accounts. | Weekly / Monthly |
@@ -62,6 +63,9 @@ Use these individually, or integrate them into scheduled tasks, pipelines, or au
 
 # Bundle the ticket, approval, and generated evidence into one audit packet
 .\identity\export_identity_change_packet.ps1 -WorkflowType Onboarding -TicketPath ..\config\servicenow_onboarding_ticket.sample.json -ApprovalRecordPath ..\config\approval_record.sample.json -RelatedArtifactPaths ..\logs\onboarding_from_ticket.csv -OutputPath ..\logs\identity_change_packet.json
+
+# Run the safe identity workflow demo
+.\identity\invoke_identity_workflow_demo.ps1 -OutputDirectory ..\reports\identity-demo
 
 # Build a rollback-oriented artifact from an onboarding run report
 .\identity\export_identity_change_artifact.ps1 -ReportPath ..\logs\onboarding_run.csv -OutputPath ..\logs\onboarding_change_artifact.json

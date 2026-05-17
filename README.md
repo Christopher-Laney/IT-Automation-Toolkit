@@ -85,6 +85,7 @@ The project emphasizes **automation, security, and scalability**, showing how a 
 ## ⚡ Quickstart
 
 For a no-tenant portfolio or stakeholder walkthrough, start with [docs/demo_guide.md](docs/demo_guide.md).
+A focused end-to-end identity storyline is available in [docs/identity_workflow_demo.md](docs/identity_workflow_demo.md).
 A generated sample transcript is available at [docs/demo_transcript.md](docs/demo_transcript.md), and you can refresh it with `.\scripts\reporting\generate_demo_transcript.ps1`.
 
 See [docs/quickstart.md](docs/quickstart.md) for a safe local walkthrough, including syntax validation, onboarding preview mode, optional server checks, and report generation.
