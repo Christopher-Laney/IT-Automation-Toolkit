@@ -1,6 +1,7 @@
 # Workflow Overview
 
 This document describes the high-level flow across onboarding, offboarding, backups, and reporting.
+See [architecture_decisions.md](architecture_decisions.md) for the design choices that shape these workflows.
 
 1. **Onboarding**: Intake ticket → validate approval → create user → assign license → add to groups → export rollback artifacts.
 2. **Offboarding**: Intake ticket → validate approval → disable account → revoke sessions → remove access → notify stakeholders.
